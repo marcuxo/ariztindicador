@@ -1,0 +1,26 @@
+{
+  "name": "ariztindicador",
+  "version": "1.0.0",
+  "description": "Proyecto de inyeccion",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon server/ariztindicador.js",
+    "start": "node server/ariztindicador.js"
+  },
+  "keywords": [],
+  "author": "MarcoUrrutiaMolina(marcuXo)",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.1",
+    "express-handlebars": "^5.3.2",
+    "moment": "^2.29.1",
+    "mongoose": "^5.13.3",
+    "xlsx": "^0.17.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}
