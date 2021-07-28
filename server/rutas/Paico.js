@@ -10,6 +10,7 @@ const modprodto = require('../DDBB/MODEL/Productos');
 const modOf = require('../DDBB/MODEL/ofs');
 moment().utc().format();
 
+
 // ruta principal aqui inicia la aplicacion
 router.get('/', async (req, res) => {
   // const findPrdto = await modprodto.find().sort({COD_PRODUCTO: 1});
