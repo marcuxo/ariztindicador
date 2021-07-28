@@ -1,6 +1,6 @@
 module.exports = {
     apps: [{
-        name:"indicadorMatico",
+        name:"ariztindicador",
         script: "/home/marcuxo/ariztindicador/server/ariztindicador.js",
         env:{
             NODE_ENV: "development",
