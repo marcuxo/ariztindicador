@@ -4,7 +4,7 @@ const path = require('path');
 const fileupload = require('express-fileupload');
 const expHBS = require('express-handlebars');
 const app = express();
-require('./DDBB/CONN.DDBB')
+//require('./DDBB/CONN.DDBB')
 
 
 // settings
