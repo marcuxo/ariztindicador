@@ -41,13 +41,13 @@ router.post('/menu', async(req, res) => {
   }
   //console.log(programa);
   var _f = new Date();
-  var dia = _f.getDate();
+  var dia = _f.getDate()-1;
   var yyyy = _f.getFullYear();
   var mm2 = _f.getMonth()+1;
   var mm = mm2<10?"0"+mm2:mm2;
   var dd = dia<10?"0"+dia:dia;
   var leDate = `${yyyy}-${mm}-${dd}T04:00:00.000+00:00`
-  var queryOF = await modOf.find({FECHA_PRODUCT: leDate}).sort({N_OF: -1}).limit(15);
+  var queryOF = await modOf.find({FECHA_PRODUCT: {$gte:leDate}}).sort({N_OF: -1}).limit(15);
   res.render('PAICO/menu', {OPERARIO, ALERTA, codigo, imgbtn, queryOF, programa})
 });
 
