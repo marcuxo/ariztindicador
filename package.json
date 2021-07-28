@@ -2,7 +2,7 @@
   "name": "ariztindicador",
   "version": "1.0.0",
   "description": "Proyecto de inyeccion",
-  "main": "index.js",
+  "main": "server/ariztindicador.js",
   "scripts": {
     "dev": "nodemon server/ariztindicador.js",
     "start": "node server/ariztindicador.js"
