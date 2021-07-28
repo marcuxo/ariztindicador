@@ -62,7 +62,7 @@ router.get('/menu', async(req, res) => {
   var mm = mm2<10?"0"+mm2:mm2;
   var dd = dia<10?"0"+dia:dia;
   var leDate = `${yyyy}-${mm}-${dd}T00:00:00.000+00:00`
-  var queryOF = await modOf.find({FECHA_OF: leDate}).sort({N_OF: -1}).limit(15);
+  var queryOF = await modOf.find({FECHA_PRODUCT: {$gte:leDate}}).sort({N_OF: -1}).limit(15);
   res.render('PAICO/menu', {queryOF})
 });
 
@@ -81,7 +81,8 @@ router.post('/inyeccion', async(req, res) => {
   var mm = mm2<10?"0"+mm2:mm2;
   var dd = dia<10?"0"+dia:dia;
   var leDate = `${yyyy}-${mm}-${dd}T04:00:00.000+00:00`
-  await modOf.find({$and:[{FECHA_PRODUCT:leDate},{N_OF: of}]},(err, obje)=>{
+  await modOf.find({N_OF: of},(err, obje)=>{
+    // console.log(obje)
     if(obje.length==0){
       cod_producto_ = 'SIN REFERENCIA'
     }
