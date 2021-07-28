@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="">
+  <link rel="stylesheet" href="/css/bootstrap.css">
+  <script src="https://kit.fontawesome.com/2d5d9448ef.js" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+</head>
+<body>
+  {{!-- {{> error }} --}}
+    
+  {{{ body }}}
+
+  {{> footer }}
+
+  {{!-- <div class="btn-menup fixed-top mt-4 pl-5">
+        <div class="row">
+          <div class="col text-left ">
+            <small class="font-italic menuflotante" id="menuflotante"><i class="fas fa-bars fa-3x"></i></small>
+            <div id="menuhoja"></div>
+          </div>
+        </div>
+      </div> --}}
+</body>
+</html>
+    
+  <style>
+    .btn-menup {
+      width: fit-content;
+      height: fit-content;
+    }
+    .menuflotante {
+      cursor: pointer;
+    }
+    body {
+      background-image: url(/img/fondo.jpg);
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-attachment: fixed;
+      background-size: cover;
+      height: 100%;
+    }
+      .mainmenu {
+    border-radius: 20px;
+    background-color: rgba(247, 250, 249, 0.391);
+    box-shadow: 5px 5px 5px rgb(0, 0, 0, .5);
+  }
+  </style>
+  {{!-- <script>
+    var menuflot = document.getElementById('menuflotante');
+    var menuhoja = document.getElementById('menuhoja');
+    var nu = 0;
+      menuflot.addEventListener('click', () => {
+        if(nu == 0){
+          menuhoja.innerHTML = `
+          <div class="col bg-dark rounded text-white py-3" id="menuhoja">
+            <p ><i class="fas fa-house-user"></i></i><a href="/paico" class="text-white"> INICIO</a></p>
+            <p ><i class="far fa-chart-bar"></i><a href="/paico/grafico/iqf1" class="text-white"> GRAFICO IQF 1</a></p>
+            <p ><i class="far fa-chart-bar"></i><a href="/paico/grafico/iqf4" class="text-white"> GRAFICO IQF 4</a></p>
+            <p ><i class="far fa-chart-bar"></i><a href="/paico/grafico/650" class="text-white"> GRAFICO 650 TRUTRO</a></p>
+          </div>
+          `
+        nu++
+        }else{
+          menuhoja.innerHTML = "";
+          nu = 0;
+        }
+      //console.log(nu)
+      });
+      menuhoja.addEventListener('mouseleave', () => {
+          setTimeout(() => {
+            menuhoja.innerHTML = "";
+            nu = 0;
+          }, 1000);
+      });
+  </script> --}}

@@ -1,0 +1,215 @@
+<title>M E N U</title>
+<style>
+  .full {
+    height: 100vh;
+  }
+  .centro {
+    margin: auto auto;
+    {{!-- box-shadow: 5px 10px 8px #8888; --}}
+  }
+  .alerta {
+    bottom: 30px;
+  }
+</style>
+<div class="container ">
+  
+    <form action="/paico/inyeccion" method="post" id="cargaInyeccion">
+  <div class="row full">
+    <div class="centro text-center">
+      <label class="lead">{{codigo}}</label><br>
+      <input type="image" class="" src="{{imgbtn}}" height="200px"> <br>
+      <label for="">INGRESAR CONTROL DE INYECCION</label>
+      <select name="N_OF" id="N_OF" class="form-control form-control-sm rounded-pill">
+        <option class="text-monospace" value="000">Seleccione una OF</option>
+        {{#each queryOF}}
+          {{#each this}}
+            {{#if N_OF}}
+              <option class="text-monospace" value="{{ N_OF }}">{{ N_OF }}</option>
+            {{/if}}
+          {{/each}}
+        {{/each}}
+      </select>
+      <input type="hidden" name="OPERARIO" value="{{OPERARIO}}">
+      <input type="hidden" name="codigo" id="codigo" value="">
+    </div>
+    </form>
+    <div class="centro text-center">
+      <a href="./" class="btn btn-danger btn-sm w-100 p-5 rounded-pill" onclick=""><i class="fas fa-exchange-alt fa-5x"></i></a>
+      <label for="">CAMBIAR EQUIPO</label>
+    </div>
+    <div class="centro text-center">
+      <a href="/paico/grafico" class="btn btn-success btn-sm w-100 p-5 rounded-pill" onclick=""><i class="far fa-chart-bar fa-5x"></i></a>
+      <label for="">GRAFICO</label>
+    </div>
+  </div>
+
+      <div class="fixed-bottom alerta" id="alertas_dis">
+    {{#if TEMPERATURA}}
+        <div class="alert {{COLOR_TEMP}} alert-dismissible fade show text-center" role="alert" id="alerta1">
+          <strong>{{TEMPERATURA}}</strong>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+    {{/if}}
+    {{#if ALERT_INYEC}}
+        <div class="alert {{COLOR_INY}} alert-dismissible fade show text-center" role="alert" id="alerta2">
+          <strong>{{ALERT_INYEC}}</strong>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+    {{/if}}
+    {{#if ALERTA}}
+        <div class="alert alert-success alert-dismissible fade show text-center" role="alert" id="alerta3">
+          <strong>Datos ingresados con exito</strong>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+    {{/if}}
+      </div>
+</div>
+      <div class="container fixed-top">
+        <div class="row">
+          <div class="col text-right">
+            <small class="text-info font-italic">{{OPERARIO}} <a href="./" title="SALIR O CAMBIAR NOMBRE">[X]</a></small>
+            <img src="/img/logo.png" alt="" class="" style="height: 50PX;">
+          </div>
+        </div>
+      </div>
+
+      {{!-- MODAL DE GRAFICO  --}}
+      {{#if GRAFICO}}
+
+          <div class="alto bg-info" id="modalgrafico">
+            <div class="relato" id="relato">
+              <div class="btn-cerrar"><i class="fas fa-times fa-3x text-danger" title="CERRAR" onclick="CERRAR_GRAF()"></i></div>
+              <div class="" id="chartContainer"></div>
+            </div>
+          </div>
+<style>
+  .btn-cerrar {
+    border: 2px;
+    position: relative;
+    float: right;
+    z-index: 1060;
+    top: -40px;
+    right: -40px;
+    cursor: pointer;
+  }
+  .alto {
+    position: fixed;
+    text-align:center;
+    padding-top: 7%;
+    top:0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1050;
+  }
+  .relato {
+    margin: 0px auto;
+  }
+ 
+</style>
+
+        <script>
+          window.onload = function () {
+            var ancho = screen.width-(screen.width*0.2) //ancho
+            var alto = screen.height-(screen.height*0.3) //alto
+            var pading = (screen.width-ancho);
+            var relato = document.getElementById('relato');
+            //relato.style.paddingLeft = pading*0.75+"px";
+            relato.style.width = ancho+"px";
+            relato.style.height = alto+"px";
+            console.log(pading*0.75)
+var chart = new CanvasJS.Chart("chartContainer", {
+  
+  width: ancho,
+  height: alto,
+	theme: "light2", // "light1", "light2", "dark1", "dark2"
+	animationEnabled: true,
+	title:{
+		text: "{{GRAFTITLE}}"   
+	},
+	axisX: {
+    crosshair: {
+      enabled: true,
+      snapToDataPoint: true
+	  },
+		title: "Hora",
+		suffix : ""
+	},
+	axisY:{
+    crosshair: {
+      enabled: true,
+      snapToDataPoint: true
+	  },
+    suffix : " %",
+		title: "% INYECCION",
+		includeZero: true,
+		valueFormatString: "#0"
+	},
+	data: [{        
+		type: "spline",
+		markerSize: 12,
+		xValueFormatString: "hh:mm",
+		yValueFormatString: "#,## %",
+		{{!-- dataPoints: [        
+			{ x: new Date(2016, 01, 1,10,12), y: 61.5, markerColor: "green" },
+			{ x: new Date(2016, 01, 1,10,30), y: 71, markerColor: "red" },
+			{ x: new Date(2016, 01, 1,10,45) , y: 55,  markerColor: "green" },
+			{ x: new Date(2016, 01, 1,11,00) , y: 50, markerColor: "green" },
+			{ x: new Date(2016, 01, 1,11,15) , y: 65, markerColor: "red" },
+			{ x: new Date(2016, 01, 1,11,30) , y: 85, markerColor: "green" },
+			{ x: new Date(2016, 01, 1,11,45) , y: 68, markerColor: "red" },
+			{ x: new Date(2016, 01, 1,12,00) , y: 28, markerColor: "green" },
+			{ x: new Date(2016, 01, 1,12,15) , y: 34, markerColor: "green" },
+			{ x: new Date(2016, 01, 1,12,30) , y: 24, markerColor: "green" },
+			{ x: new Date(2016, 01, 1,12,45) , y: 50, markerColor: "green" },
+		] --}}
+    dataPoints: [
+      {{#each arrgrafpersonal}}
+			  { x: new Date({{x}}) , y: {{y}}, markerColor: "{{markerColor}}" },
+      {{/each}}
+		]
+	}]
+});
+chart.render();
+
+}
+        </script>
+        <script type="text/javascript" src="/js/jquery-1.11.1.js"></script>
+        <script type="text/javascript" src="/js/stockChart.js"></script>
+      {{/if}}
+      <script>
+        var codigo = document.getElementById('codigo')
+        codigo.value = sessionStorage.getItem('codigo')
+
+        
+
+        var formulario = document.getElementById('cargaInyeccion');
+        var n_of = document.getElementById('N_OF');
+        formulario.addEventListener('submit', function(e){
+          console.log(n_of.value)
+          if(n_of.value == "000"){
+            alert('Debes Seleccionar una OF')
+            n_of.focus();
+            e.preventDefault()
+          }
+        })
+        var modal = document.getElementById('modalgrafico');
+        var alertas_dis = document.getElementById('alertas_dis');
+        function CERRAR_GRAF() {
+          modal.classList.add('invisible')
+          var alerta1 = document.getElementById('alerta1');
+          var alerta2 = document.getElementById('alerta2');
+          var alerta3 = document.getElementById('alerta3');
+          setTimeout(() => {
+            alerta1.classList.remove('show');
+            alerta2.classList.remove('show');
+            alerta3.classList.remove('show');
+            alertas_dis.classList.add('invisible')
+          }, 10000);
+          }
+      </script>

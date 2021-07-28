@@ -1,0 +1,82 @@
+<title>L O A D  -  A R C H I V O</title>
+<div class="container pt-5">
+  <div class="row">
+    <div class="col-12">
+      <h4 class="font-italic  text-right">CARGA DE DATOS A INYECCION</h4>
+      <div class="col py-1 gradient"></div>
+    </div>
+  </div>
+</div>
+<div class="container pt-5">
+  <div class="row">
+    <div class="col-12 py-3 mainmenu text-center">
+      <form action="/paico/xlsxinyeccion" method="post" enctype="multipart/form-data" id="formulario">
+      <label for="file" id="secondfile" class="btn btn-info"> Seleccione Archivo </label>
+        <input type="file" name="file" id="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required><br>
+        <button type="submit" class="btn btn-success px-5">CARGAR DATOS!!</button>
+        <input type="hidden" name="OPERARIO" value="{{OPERARIO}}"><br><br>
+      </form>
+        <a href="/archivo/MAESTRO_INYECCION.xlsx" class="">Descargar archivo de ejemplo</a>
+    </div>
+  <style>
+    input[type="file"]#file {
+    top: -25px;
+    margin: auto;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: relative;
+    z-index: -1;
+  }
+  </style>
+
+    <div class="col-12 pt-5">
+      {{#if TOTAL}}
+        <div class="alert alert-success alert-dismissible fade show text-center" role="alert" id="alerta1">
+          <strong>SE CARGARON A LOS DATOS DE INYECCION UN TOTAL DE {{TOTAL}} DATOS</strong>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <script>
+          var alerta1 = document.getElementById('alerta1');
+          setTimeout(() => {
+            alerta1.classList.remove('show');
+            alerta1.classList.add('invisible')
+          }, 10000);
+        </script>
+      {{/if}}
+    </div>
+
+  </div>
+</div>
+
+      <div class="container fixed-top ">
+        <div class="row">
+          <div class="col text-right ">
+            <small class=" font-italic mainmenu p-2">{{OPERARIO}} <a href="./" title="SALIR O CAMBIAR NOMBRE"><i class="fas fa-times-circle text-danger "></i></a></small>
+            <img src="/img/logo_ariztia.png" alt="" class="" style="height: 50PX;">
+            <a href="javascript:history.back()" class="btn btn-info btn-sm float-left"> Volver Atrás</a>
+          </div>
+        </div>
+      </div>
+
+<script>
+  var file = document.getElementById('file')
+  var labelfila = document.getElementById('secondfile')
+  file.addEventListener('change',(e)=>{
+    var a = e.target.value.split('\\')
+    var b = a.pop()
+    if(a == ''){
+      labelfila.innerHTML = 'Seleccione Archivo'
+    } else {
+      labelfila.innerHTML = b
+    }
+  })
+</script>
+<style>
+  .gradient {
+    background: linear-gradient(90deg, rgba(255,255,255,0) 10%, rgba(255,2,2,1) 43%, rgba(0,0,0,1) 87%) !important;
+  }
+</style>

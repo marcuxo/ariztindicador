@@ -1,0 +1,53 @@
+<style>
+  .full {
+    height: 100vh;
+  }
+  .centro {
+    margin: auto auto;
+  }
+  .contenedor {
+    width: 50vw;
+  }
+  img {
+    padding-top: 25%;
+    display: block;
+    margin: auto;
+  }
+
+</style>
+<div class="container">
+    <form action="/paico/menu" method="post">
+  <div class="row full">
+    <div class="col-12 col-md-8 centro">
+     <div class="row">
+        <div class="col-12 col-md-6">
+          <img src="/img/logo_ariztia.png" alt="" class="img-fluid">
+        </div>
+        <div class="col-12 col-md-6 py-5 mainmenu">
+          <label class="text-secondary">INGRESE SU NOMBRE </label>
+          <input type="text" class="form-control form-control-sm rounded-pill w-100" name="OPERARIO" id="OPERARIO" placeholder="Ejemplo: JUAN CORLEONE O JCORLEONE" style="text-transform:uppercase;" required>
+          <label class="text-secondary mt-3">SELECCIONE LINEA</label>
+          <select name="producto" id="producto" class="form-control form-control-sm rounded-pill w-100" required>
+              <option class="text-monospace">SELECCIONE LINEA</option>
+              <option class="text-monospace">CFS 450 IQF 1</option>
+              <option class="text-monospace">CFS 650 IQF 4</option>
+              <option class="text-monospace">CFS 650 TRUTRO NORTE</option>
+              <option class="text-monospace">CFS 650 TRUTRO SUR</option>
+          </select>
+          <button type="submit" class="btn btn-sm btn-info rounded-pill w-100 mt-4" onmouseover="savecode()">INGRESAR</button>
+        </div>
+     </div>
+    </div>
+  </div>
+    </form>
+</div>
+<div class="fondo">
+
+</div>
+<script>
+  function savecode(){
+    var code_ = document.getElementById('producto').value;
+    sessionStorage.setItem('codigo',code_)
+    //console.log(code_)
+  }
+</script>

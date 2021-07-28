@@ -1,0 +1,61 @@
+<title>L O A D  -  A R C H I V O</title>
+<div class="container pt-5">
+  <div class="row">
+    <div class="col-12">
+      <h4 class="font-italic text-right">CARGA DE DATOS A OF</h4>
+      <div class="col py-1 gradient"></div>
+    </div>
+  </div>
+</div>
+<div class="container pt-5">
+  <div class="row">
+    <div class="col-12 mainmenu py-3">
+      <form action="/paico/xlsxof" method="post" enctype="multipart/form-data" id="formulario">
+        <input type="file" name="file" id="file" class="form-control" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required><br>
+        <button class="btn btn-success rounded-pill w-100">CARGAR DATOS!!</button>
+        <input type="hidden" name="OPERARIO" value="{{OPERARIO}}"><br><br>
+        <a href="/archivo/MAESTRO_OF.xlsx" class="">Descargar archivo de ejemplo</a>
+      </form>
+    </div>
+
+    <div class="col-12 pt-5">
+      {{#if TOTAL}}
+        <div class="alert alert-success alert-dismissible fade show text-center" role="alert" id="alerta1">
+          <strong>SE CARGARON A LOS DATOS DE OF UN TOTAL DE {{TOTAL}} DATOS</strong>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+</div>
+
+      <div class="container fixed-top ">
+        <div class="row">
+          <div class="col text-right ">
+            <small class=" font-italic mainmenu p-2">{{OPERARIO}} <a href="./" title="SALIR O CAMBIAR NOMBRE"><i class="fas fa-times-circle text-danger "></i></a></small>
+            <img src="/img/logo_ariztia.png" alt="" class="" style="height: 50PX;">
+          </div>
+        </div>
+      </div>
+
+
+<script>
+  document.getElementById('formulario').addEventListener('submit', (e) => {
+    var seguro = confirm('ESTA SEGURO DE SUBIR EL ARCHIVO SELECCIONADO A LOS ARCHIVOS DE OF')
+    if(!seguro) {
+      e.preventDefault()
+    }
+  });
+  var alerta1 = document.getElementById('alerta1')
+  setTimeout(() => {
+    alerta1.classList.remove('show');
+    alerta1.classList.add('invisible')
+  }, 10000);
+</script>
+<style>
+  .gradient {
+    background: linear-gradient(90deg, rgba(255,255,255,0) 10%, rgba(255,2,2,1) 43%, rgba(0,0,0,1) 87%) !important;
+  }
+</style>

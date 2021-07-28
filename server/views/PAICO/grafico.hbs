@@ -1,0 +1,100 @@
+<title>G R A F I C O</title>
+
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>new chart</title>
+  <link rel="stylesheet" href="../css/bootstrap.css">
+<script type="text/javascript" src="/js/jquery-1.11.1.js"></script>
+<script type="text/javascript" src="/js/stockChart.js"></script>
+<script type="text/javascript">
+window.onload = function () {
+  var stockChart = new CanvasJS.StockChart("chartContainer",{
+    theme: "light2",
+    animationEnabled: false,
+    title:{
+      text:"{{TITULO}}"
+    },
+    subtitles: [{
+      //text: "No of Trades: BTC/USD vs BTC/EUR"
+    }],
+    charts: [{
+      axisX:{crosshair: {
+          enabled: true,
+          snapToDataPoint: true
+	  	  }},
+      axisY: {
+        title: "% DE INYECCION",
+        crosshair: {
+          enabled: true,
+          snapToDataPoint: true
+	  	  }
+      },
+      toolTip: {
+        shared: true
+      },
+      legend: {
+            cursor: "pointer",
+            itemclick: function (e) {
+              if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible)
+                e.dataSeries.visible = false;
+              else
+                e.dataSeries.visible = true;
+              e.chart.render();
+            },
+            		reversed: true,
+		verticalAlign: "center",
+		horizontalAlign: "right"
+        },
+				//datos
+      data: [
+				{{#each grafdataM}}
+				{
+				type: "{{this.type}}",
+				showInLegend: {{this.showInLegend}},
+				name: "{{this.name}}",
+				yValueFormatString: "#,## %",
+				xValueType: "dateTime",
+				dataPoints : [
+					{{#each this.dataPoints}}
+					{x: new Date({{this.x}}), y: {{this.y}}, markerColor: "{{this.markerColor}}", indexLabel: "{{this.indexLabel}}",  indexLabelFontColor: "{{this.indexLabel}}"},
+					{{/each}}
+					],
+				},
+				{{/each}}
+			]
+    }],
+    rangeSelector: {
+      enabled: false
+    },
+    navigator: {
+      data: [{
+        dataPoints: [
+					{{#each grafico}}
+						{x: new Date({{x}}), y: {{y}} },
+					{{/each}}
+        ]   
+      }],
+      slider: {
+       minimum: new Date(2020, 11, 07, 08,00),
+       maximum: new Date(2020, 11, 16, 20,30)
+      }
+    }
+  });   
+    stockChart.render();
+}
+
+  function fechaActual(){
+    var fecha = new Date();
+    console.log(fecha);
+  }
+</script>
+</head>
+<body>
+<div id="chartContainer" style="height: 100%; width: 100%;"></div>
+<!-- <div class="custom-control custom-switch">
+  <input type="checkbox" class="custom-control-input" id="customSwitch1">
+  <label class="custom-control-label" for="customSwitch1">Toggle this switch element</label>
+</div> -->
+</body>
+</html>

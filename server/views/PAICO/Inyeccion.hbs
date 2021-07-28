@@ -1,0 +1,199 @@
+<title>% INYECCION</title>
+<style>
+  .kiloin{
+    border-radius: 10px;
+    padding: 3px;
+    background-color: black;
+    color: white;
+    position: relative;
+    top: -60%;
+    left: -15%;
+  }
+  .kiloout{
+    border-radius: 10px;
+    padding: 3px;
+    background-color: black;
+    color: white;
+    position: relative;
+    top: -60%;
+    left: 45%;
+  }
+  .porinye{
+    border-radius: 10px;
+    padding: 3px;
+    background-color: black;
+    color: white;
+    position: relative;
+    top: -20%;
+    left: 20%;
+  }
+  .pressss{
+    border-radius: 10px;
+    padding: 3px;
+    background-color: black;
+    color: white;
+    position: relative;
+    top: -80%;
+    left: 10%;
+  }
+</style>
+<div class="pt-5 pb-3"></div>
+<div class="container">
+    <div class="row">
+      <div class="col mainmenu">
+    <form action="/paico/saveiny" method="post" id="formulario">
+        <p class="lead text-right">% INYECCION CADA 15 MIN</p>
+        <div class="row">
+          <div class="col-12 col-md-6">
+            <label for="">OPERARIO</label>
+            <input type="text" name="OPERARIO" id="OPERARIO" class="form-control form-control-sm col rounded-pill" value="{{OPERARIO}}" readonly>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="">MAQUINA</label>
+            <input type="text" name="MAQUINA" id="MAQUINA" class="form-control form-control-sm col rounded-pill" value="{{MAQUINA}}" readonly>
+          </div>
+          <div class="col-12">
+            <input type="hidden" name="COD_OF" id="COD_OF" value="{{of}}">
+            <input type="hidden" name="CODIGO" id="CODIGO" value="{{COD_PRODUCT}}">
+            <input type="hidden" name="PROGRAMA" id="PROGRAMA" value="{{programa}}">
+            <label for="">PRODUCTO</label>
+            <input type="text" name="PRODUCTO" id="PRODUCTO" class="form-control form-control-sm rounded-pill col" value="{{PRODUCTO}}" readonly required>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="">FECHA</label>
+            <input type="date" name="FECHA" id="FECHA" class="form-control form-control-sm col rounded-pill" readonly>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="">HORA</label>
+            <input type="time" name="HORA" id="HORA" class="form-control form-control-sm col rounded-pill" readonly>
+          </div>
+        </div>
+{{!-- bar img y porcentage de inyeccion --}}
+        <div class="row m-3 p-3 mainmenu">
+          <div class="col-12 col-sm-6  rounded ">
+            <p class="lead text-danger">PESO PRODUCTO</p>
+            <label class=" text-danger">KG ENTRADA</label>
+            <input type="number" step="any" name="KG_IN" id="KG_IN" class="form-control form-control-sm rounded-pill" required onchange="setDataImg(this.value, this.id)">
+
+            <label class=" text-danger">KG SALIDA</label>
+            <input type="number" step="any" name="KG_OUT" id="KG_OUT" class="form-control form-control-sm rounded-pill" required onchange="setDataImg(this.value, this.id)">
+
+            <label class=" text-danger">%INYECCION</label>
+            <input type="number" step="any" name="X_INYECTED" id="X_INYECTED" class="form-control form-control-sm /invisible rounded-pill" readonly>
+          </div>
+          <div class="col-12 col-sm-6 text-center">
+            <img src="/img/inyect.gif" alt="" height="" class="img-thumbnail">
+            <label id="kiloin" class="kiloin">00.0 kg</label>
+            <label id="kiloout" class="kiloout">00.0 kg</label>
+            <label id="porinye" class="porinye">00.0 %</label>
+            <label id="pressss" class="pressss">0.0 bar</label>
+          </div>
+        </div>
+{{!-- bar img y porcentage de inyeccion --}}
+        <div class="row">
+          <div class="col-12 col-md-6">
+            <label for="">PRESION EQUIPO (EN BAR)</label>
+            <input type="number" step="any" name="PRES_MAQ" id="PRES_MAQ" class="form-control form-control-sm col rounded-pill" required onchange="setDataImg(this.value, this.id)">
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="">VELOCIDAD CINTA</label>
+            <input type="number" step="any" name="VEL_CINT_MAQ" id="VEL_CINT_MAQ" class="form-control form-control-sm col rounded-pill" required>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="">GOLPES POR MINUTO</label>
+            <input type="number" step="any" name="GOLP_X_MAQ" id="GOLP_X_MAQ" class="form-control form-control-sm col rounded-pill" required>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="">TEMPERATURA SALMUERA</label>
+            <input type="number" step="any" name="TEMP_MAQ" id="TEMP_MAQ" class="form-control form-control-sm col rounded-pill" required>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="">HORA ULTIMO LAVADO FILTRO</label>
+            <input type="time" name="FILTER_CLEAM_MAQ" id="FILTER_CLEAM_MAQ" class="form-control form-control-sm col rounded-pill" required>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="" class="">SUPERVISOR DE INYECCION</label>
+            <input type="text" name="SUPER_INYECT" id="SUPER_INYECT" class="form-control form-control-sm col rounded-pill" placeholder="INGRESE NOMBRE DE SUPERVISOR DE INYECCION">
+          </div>
+        </div>
+
+        <br>
+        <input type="submit" value="GUARDAR" id="btn_cargar" class="btn btn-secondary btn-block rounded-pill">
+        <br>
+      </div>
+    </form>
+    </div>
+  </div>
+  <br>
+  <br>
+  <br>
+       <div class="container fixed-top ">
+        <div class="row">
+          <div class="col text-right ">
+            <small class=" font-italic mainmenu p-2">{{OPERARIO}} <a href="./" title="SALIR O CAMBIAR NOMBRE"><i class="fas fa-times-circle text-danger "></i></a></small>
+            <img src="/img/logo_ariztia.png" alt="" class="" style="height: 50PX;">
+            <a href="javascript:history.back()" class="btn btn-info btn-sm float-left"> Volver Atrás</a>
+          </div>
+        </div>
+      </div>
+
+
+ <script>
+
+   const hora = document.getElementById('HORA');
+   const fecha = document.getElementById('FECHA');
+   
+    setInterval(() => {
+      hora.value = '';
+      var H = new Date()
+      var HH = H.getHours();
+      var HHF = HH<10?'0'+HH:HH;
+      var MIN = H.getMinutes();
+      var MINF = MIN<10?'0'+MIN:MIN;
+      var SEG = H.getSeconds();
+      var SEGF = SEG<10?'0'+SEG:SEG;
+      var DD = H.getDate();
+      var DDF = DD<10?'0'+DD:DD;
+      var MM = H.getMonth()+1;
+      var MMF = MM<10?'0'+MM:MM;
+      var YY = H.getFullYear();
+      hora.value = HHF+':'+MINF+':'+SEGF;
+      fecha.value = YY+'-'+MMF+'-'+DDF;
+      //console.log(DD+'/'+MM+'/'+YY);
+    }, 1000);
+    var xinyect = document.getElementById('porinye');
+    var dato1 = document.getElementById('KG_IN');
+    var dato2 = document.getElementById('KG_OUT');
+    var xinye = document.getElementById('X_INYECTED');
+    dato2.addEventListener('change',function(){
+      var kgin = dato1.value;
+      var kgout = dato2.value
+      var restkg = kgout-kgin;
+      var xcent = (restkg*100)/kgin;
+      var xcentF = parseFloat(xcent).toFixed(2);
+      xinye.value = xcentF;
+      xinyect.innerHTML = xcentF+" %";
+    });
+  
+    
+    function setDataImg(data, id){
+      var txt = document.getElementById(id);
+      if(id === "PRES_MAQ"){
+        //console.log("presion de maquina"+data);
+        var data_press = document.getElementById('pressss')
+        data_press.innerHTML = data+" bar";
+      }
+      if(id === "KG_IN"){
+        var data_press = document.getElementById('kiloin')
+        data_press.innerHTML = data+" kg";
+      }
+      if(id === "KG_OUT"){
+        var data_press = document.getElementById('kiloout')
+        data_press.innerHTML = data+" kg";
+      }
+      //console.log("dato=>>"+data+"// id=>>"+id)
+    }
+
+    
+
+</script>
