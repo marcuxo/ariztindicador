@@ -56,7 +56,7 @@ router.get('/menu', async(req, res) => {
  
   //console.log(programa);
   var _f = new Date();
-  var dia = _f.getDate();
+  var dia = _f.getDate()-1;
   var yyyy = _f.getFullYear();
   var mm2 = _f.getMonth()+1;
   var mm = mm2<10?"0"+mm2:mm2;
@@ -223,7 +223,7 @@ router.post('/saveiny', async(req, res) => {
   }
   //console.log(programa);
   var _f = new Date();
-  var dia = _f.getDate();
+  var dia = _f.getDate()-1;
   var yyyy = _f.getFullYear();
   var mm2 = _f.getMonth()+1;
   var mm = mm2<10?"0"+mm2:mm2;
