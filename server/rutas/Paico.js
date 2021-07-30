@@ -59,7 +59,7 @@ router.get('/menu', async(req, res) => {
   var mm = mm2<10?"0"+mm2:mm2;
   var dd = dia<10?"0"+dia:dia;
   var leDate = `${yyyy}-${mm}-${dd}T00:00:00.000+00:00`;
-  var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria}]}).sort({N_OF: -1});
+  var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}).sort({N_OF: -1});
   res.render('PAICO/menu', {queryOF})
 });
 
@@ -230,7 +230,7 @@ router.post('/saveiny', async(req, res) => {
   var leDate = `${yyyy}-${mm}-${dd}T04:00:00.000+00:00`
   console.log(leDate);
   //var queryOF = await modOf.find({FECHA_PRODUCT: {$gte:leDate}}).sort({N_OF: -1}).limit(15);
-  var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria}]}).sort({N_OF: -1});
+  var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}).sort({N_OF: -1});
   var arrgrafpersonal = await grafPesonal(data.CODIGO, COD_OF);
  
   var ALERTA = true;
