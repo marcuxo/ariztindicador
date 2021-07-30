@@ -44,7 +44,7 @@ router.post('/menu', async(req, res) => {
   var dd = dia<10?"0"+dia:dia;
   var leDate = `${yyyy}-${mm}-${dd}T00:00:00.000+00:00`
   //var queryOF = await modOf.find({FECHA_PRODUCT: {$gte:leDate}}).sort({N_OF: -1}).limit(15);
-  var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria}]}).sort({N_OF: -1});
+  var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}).sort({N_OF: -1});
   res.render('PAICO/menu', {OPERARIO, ALERTA, codigo, imgbtn, queryOF, maquinaria})
 });
 
