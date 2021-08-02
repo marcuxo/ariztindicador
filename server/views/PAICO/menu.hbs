@@ -99,7 +99,7 @@
       </div>
 
       {{!-- MODAL DE GRAFICO  --}}
-      {{#if GRAFICO}}
+{{!-- {{#if GRAFICO}}
 
           <div class="alto bg-info" id="modalgrafico">
             <div class="relato" id="relato">
@@ -114,83 +114,83 @@
               </div>
             </div>
           </div>
-<style>
-  .btn-cerrar {
-    border: 2px;
-    position: relative;
-    float: right;
-    z-index: 1060;
-    top: -10px;
-    right: -40px;
-    cursor: pointer;
-  }
-  .alto {
-    position: fixed;
-    padding-top: 3%;
-    top:0;
-    width: 100vw;
-    height: 150vh;
-    z-index: 1050;
-  }
-  .relato {
-    margin: 0px auto;
-  }
- 
-</style>
+    <style>
+      .btn-cerrar {
+        border: 2px;
+        position: relative;
+        float: right;
+        z-index: 1060;
+        top: -10px;
+        right: -40px;
+        cursor: pointer;
+      }
+      .alto {
+        position: fixed;
+        padding-top: 3%;
+        top:0;
+        width: 100vw;
+        height: 150vh;
+        z-index: 1050;
+      }
+      .relato {
+        margin: 0px auto;
+      }
+    
+    </style>
 
-        <script>
-          window.onload = function () {
-            var ancho = screen.width-(screen.width*0.2) //ancho
-            var alto = screen.height-(screen.height*0.3) //alto
-            var pading = (screen.width-ancho);
-            var relato = document.getElementById('relato');
-            //relato.style.paddingLeft = pading*0.75+"px";
-            relato.style.width = ancho+"px";
-            relato.style.height = alto+"px";
-            console.log(pading*0.75)
-var chart = new CanvasJS.Chart("chartContainer", {
-  
-	theme: "light2", // "light1", "light2", "dark1", "dark2"
-	animationEnabled: true,
-	title:{
-		text: "{{GRAFTITLE}}"   
-	},
-	axisX: {
-    crosshair: {
-      enabled: true,
-      snapToDataPoint: true
-	  },
-		title: "Hora",
-		suffix : ""
-	},
-	axisY:{
-    crosshair: {
-      enabled: true,
-      snapToDataPoint: true
-	  },
-    suffix : " %",
-		title: "% INYECCION",
-		includeZero: true,
-		valueFormatString: "#0"
-	},
-	data: [{        
-		type: "spline",
-		markerSize: 12,
-		xValueFormatString: "hh:mm",
-		yValueFormatString: "#,## %",
-    dataPoints: [
-      {{#each arrgrafpersonal}}
-			  { x: new Date({{x}}) , y: {{y}}, markerColor: "{{markerColor}}" },
-      {{/each}}
-		]
-	}]
-});
-chart.render();
-}
-</script>
-<script type="text/javascript" src="/js/jquery-1.11.1.js"></script>
-<script type="text/javascript" src="/js/stockChart.js"></script>
-      {{/if}}
+            <script>
+              window.onload = function () {
+                var ancho = screen.width-(screen.width*0.2) //ancho
+                var alto = screen.height-(screen.height*0.3) //alto
+                var pading = (screen.width-ancho);
+                var relato = document.getElementById('relato');
+                //relato.style.paddingLeft = pading*0.75+"px";
+                relato.style.width = ancho+"px";
+                relato.style.height = alto+"px";
+                console.log(pading*0.75)
+    var chart = new CanvasJS.Chart("chartContainer", {
+      
+      theme: "light2", // "light1", "light2", "dark1", "dark2"
+      animationEnabled: true,
+      title:{
+        text: "{{GRAFTITLE}}"   
+      },
+      axisX: {
+        crosshair: {
+          enabled: true,
+          snapToDataPoint: true
+        },
+        title: "Hora",
+        suffix : ""
+      },
+      axisY:{
+        crosshair: {
+          enabled: true,
+          snapToDataPoint: true
+        },
+        suffix : " %",
+        title: "% INYECCION",
+        includeZero: true,
+        valueFormatString: "#0"
+      },
+      data: [{        
+        type: "spline",
+        markerSize: 12,
+        xValueFormatString: "hh:mm",
+        yValueFormatString: "#,## %",
+        dataPoints: [
+          {{#each arrgrafpersonal}}
+            { x: new Date({{x}}) , y: {{y}}, markerColor: "{{markerColor}}" },
+          {{/each}}
+        ]
+      }]
+    });
+    chart.render();
+    }
+    </script>
+    <script type="text/javascript" src="/js/jquery-1.11.1.js"></script>
+    <script type="text/javascript" src="/js/stockChart.js"></script>
+{{/if}} --}}
       <script>
         var codigo = document.getElementById('codigo')
         codigo.value = sessionStorage.getItem('codigo')
