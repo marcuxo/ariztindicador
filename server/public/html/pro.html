@@ -80,6 +80,26 @@ window.onload = function () {
           {x: new Date(2020, 02, 01, 24, 00), y: 15.3, markerColor: "green" },
           {x: new Date(2020, 02, 02, 25, 00), y: 14.2, markerColor: "green" },
         ]   
+      },{
+        type: "spline",
+        showInLegend: true,
+        name: "TRUTRO MEDIANO",
+        yValueFormatString: "#,## %",
+        dataPoints : [
+          {x: new Date(2020, 02, 17, 10, 00), y: 16.3, markerColor: "green" },
+          {x: new Date(2020, 02, 18, 11, 00), y: 13.5, markerColor: "green", indexLabel: "",  indexLabelFontColor: ""},
+          {x: new Date(2020, 02, 19, 12, 00), y: 20.6, markerColor: "red", indexLabel: "\u25B2",  indexLabelFontColor: "red"},
+          {x: new Date(2020, 02, 20, 13, 00), y: 15.1, markerColor: "green" },
+          {x: new Date(2020, 02, 21, 14, 00), y: 15.1, markerColor: "green" },
+          {x: new Date(2020, 02, 22, 15, 00), y: 15.4, markerColor: "green" },
+          {x: new Date(2020, 02, 23, 16, 00), y: 14.5, markerColor: "green" },
+          {x: new Date(2020, 02, 24, 17, 00), y: 14.9, markerColor: "green" },
+          {x: new Date(2020, 02, 25, 18, 00), y: 12.8, markerColor: "red", indexLabel: "\u25Bc",  indexLabelFontColor: "red"},
+          {x: new Date(2020, 02, 26, 19, 00), y: 14.4, markerColor: "green" },
+          {x: new Date(2020, 02, 27, 20, 00), y: 14.5, markerColor: "green" },
+          {x: new Date(2020, 02, 28, 21, 00), y: 15.2, markerColor: "green" },
+          {x: new Date(2020, 02, 29, 22, 00), y: 10.8, markerColor: "red", indexLabel: "\u25Bc",  indexLabelFontColor: "red"},
+        ]   
       }]
     }],
     rangeSelector: {
@@ -120,6 +140,19 @@ window.onload = function () {
           {x: new Date(2020, 01, 30, 23, 00), y: 15.1},
           {x: new Date(2020, 02, 01, 24, 00), y: 15.3},
           {x: new Date(2020, 02, 02, 25, 00), y: 14.2},
+          {x: new Date(2020, 02, 17, 10, 00), y: 16.3},
+          {x: new Date(2020, 02, 18, 11, 00), y: 13.5},
+          {x: new Date(2020, 02, 19, 12, 00), y: 20.6},
+          {x: new Date(2020, 02, 20, 13, 00), y: 15.1},
+          {x: new Date(2020, 02, 21, 14, 00), y: 15.1},
+          {x: new Date(2020, 02, 22, 15, 00), y: 15.4},
+          {x: new Date(2020, 02, 23, 16, 00), y: 14.5},
+          {x: new Date(2020, 02, 24, 17, 00), y: 14.9},
+          {x: new Date(2020, 02, 25, 18, 00), y: 12.8},
+          {x: new Date(2020, 02, 26, 19, 00), y: 14.4},
+          {x: new Date(2020, 02, 27, 20, 00), y: 14.5},
+          {x: new Date(2020, 02, 28, 21, 00), y: 15.2},
+          {x: new Date(2020, 02, 29, 22, 00), y: 10.8},
         ]   
       }],
       slider: {
@@ -135,6 +168,7 @@ window.onload = function () {
     var fecha = new Date();
     console.log(fecha);
   }
+ 
 </script>
 </head>
 <body>
@@ -145,3 +179,12 @@ window.onload = function () {
 </div> -->
 </body>
 </html>
+<script>
+  var lacanvas = document.getElementById('thisistheid').innerHTML
+  console.log(lacanvas)
+  //lacanvas.addEventListener('onclick',console.log('click'))
+  lacanvas.addEventListener('onclick',() => {
+    var graf = document.querySelector("#chartContainer > div > div.canvasjs-chart-panel > div > div.canvasjs-chart-tooltip > div > span").innerHTML
+    console.log(graf)
+  });
+</script>

@@ -20,7 +20,7 @@
       <div class="row py-3">
        <div class="col-12 col-md-6">
           <label class="lead">{{codigo}}</label><br>
-        <input type="image" name="img_maquina" class="" src="{{imgbtn}}" height="200px"> <br>
+        <input type="image" name="img_maquina" class="" src="{{imgbtn}}" height="200px" style="border: 2px black solid;border-radius: 10px; background-color: rgba(0, 255, 255, 0.22);"> <br>
         <label for="img_maquina">INGRESAR CONTROL DE INYECCION</label>
         <select name="N_OF" id="N_OF" class="form-control form-control-sm rounded-pill">
           <option class="text-monospace" value="000">Seleccione una OF</option>
@@ -104,7 +104,14 @@
           <div class="alto bg-info" id="modalgrafico">
             <div class="relato" id="relato">
               <div class="btn-cerrar"><i class="fas fa-times fa-3x text-danger" title="CERRAR" onclick="CERRAR_GRAF()"></i></div>
-              <div class="" id="chartContainer"></div>
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col">
+                    <div class="" id="chartContainer"></div>
+                  </div>
+                    <br><br><br><br>
+                </div>
+              </div>
             </div>
           </div>
 <style>
@@ -113,17 +120,16 @@
     position: relative;
     float: right;
     z-index: 1060;
-    top: -40px;
+    top: -10px;
     right: -40px;
     cursor: pointer;
   }
   .alto {
     position: fixed;
-    text-align:center;
-    padding-top: 7%;
+    padding-top: 3%;
     top:0;
     width: 100vw;
-    height: 100vh;
+    height: 150vh;
     z-index: 1050;
   }
   .relato {
@@ -144,8 +150,6 @@
             console.log(pading*0.75)
 var chart = new CanvasJS.Chart("chartContainer", {
   
-  width: ancho,
-  height: alto,
 	theme: "light2", // "light1", "light2", "dark1", "dark2"
 	animationEnabled: true,
 	title:{
@@ -174,19 +178,6 @@ var chart = new CanvasJS.Chart("chartContainer", {
 		markerSize: 12,
 		xValueFormatString: "hh:mm",
 		yValueFormatString: "#,## %",
-		{{!-- dataPoints: [        
-			{ x: new Date(2016, 01, 1,10,12), y: 61.5, markerColor: "green" },
-			{ x: new Date(2016, 01, 1,10,30), y: 71, markerColor: "red" },
-			{ x: new Date(2016, 01, 1,10,45) , y: 55,  markerColor: "green" },
-			{ x: new Date(2016, 01, 1,11,00) , y: 50, markerColor: "green" },
-			{ x: new Date(2016, 01, 1,11,15) , y: 65, markerColor: "red" },
-			{ x: new Date(2016, 01, 1,11,30) , y: 85, markerColor: "green" },
-			{ x: new Date(2016, 01, 1,11,45) , y: 68, markerColor: "red" },
-			{ x: new Date(2016, 01, 1,12,00) , y: 28, markerColor: "green" },
-			{ x: new Date(2016, 01, 1,12,15) , y: 34, markerColor: "green" },
-			{ x: new Date(2016, 01, 1,12,30) , y: 24, markerColor: "green" },
-			{ x: new Date(2016, 01, 1,12,45) , y: 50, markerColor: "green" },
-		] --}}
     dataPoints: [
       {{#each arrgrafpersonal}}
 			  { x: new Date({{x}}) , y: {{y}}, markerColor: "{{markerColor}}" },
@@ -195,11 +186,10 @@ var chart = new CanvasJS.Chart("chartContainer", {
 	}]
 });
 chart.render();
-
 }
-        </script>
-        <script type="text/javascript" src="/js/jquery-1.11.1.js"></script>
-        <script type="text/javascript" src="/js/stockChart.js"></script>
+</script>
+<script type="text/javascript" src="/js/jquery-1.11.1.js"></script>
+<script type="text/javascript" src="/js/stockChart.js"></script>
       {{/if}}
       <script>
         var codigo = document.getElementById('codigo')
@@ -230,5 +220,8 @@ chart.render();
             alerta3.classList.remove('show');
             alertas_dis.classList.add('invisible')
           }, 10000);
-          }
+        }
+        setTimeout(() => {
+            modal.classList.add('invisible')
+          }, 5000);
       </script>
