@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
 router.post('/menu', async(req, res) => {
   const OPERARIO = req.body.OPERARIO;
   const codigo = req.body.producto;
-  // console.log(codigo, OPERARIO);
+  console.log(codigo, OPERARIO);
   var imgbtn = await maqInyectora(codigo);
   var ALERTA = false;
   var maquinaria = "";
@@ -125,8 +125,10 @@ router.post('/menu', async(req, res) => {
       arrtemp1 = [];
     }
  //console.log(arr_sel_show)
+ var ADMINISTRATIVO = false;
+ if(OPERARIO === "ADMINISTRATIVO")ADMINISTRATIVO=true
 
- res.render('PAICO/menu', {OPERARIO, ALERTA, codigo, imgbtn, queryOF, maquinaria,arr_sel_show})
+ res.render('PAICO/menu', {OPERARIO, ALERTA, codigo, imgbtn, queryOF, maquinaria,arr_sel_show, ADMINISTRATIVO})
 });
 
 //--.- menu

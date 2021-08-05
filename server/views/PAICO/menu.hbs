@@ -21,6 +21,7 @@
        <div class="col-12 col-md-6">
           <label class="lead">{{codigo}}</label><br>
         <input type="image" name="img_maquina" class="" src="{{imgbtn}}" height="200px" style="border: 2px black solid;border-radius: 10px; background-color: rgba(0, 255, 255, 0.22);"> <br>
+        
         <label for="img_maquina">INGRESAR CONTROL DE INYECCION</label>
         <input type="hidden" name="OPERARIO" value="{{OPERARIO}}">
         <input type="hidden" name="MAQUINA" id="MAQUINA" value="{{codigo}}">
@@ -35,7 +36,6 @@
             {{/each}}
           {{/each}}
         </select> --}}
-
         <select name="N_OF1" id="N_OF1" class="form-control form-control-sm rounded-pill">
           <option class="text-monospace" value="000">Seleccione una OF</option>
           {{#each arr_sel_show}}
@@ -46,7 +46,7 @@
             </optgroup>
           {{/each}}
         </select>
-
+        
         </form>
        </div>
        <div class="col-12 col-md-6 pt-5">
@@ -67,22 +67,23 @@
                 sessionStorage.removeItem('maquina')
               }
             </script>
-
+          {{#if ADMINISTRATIVO}}
             <div class="col-4 col-md-12">
               <form action="/paico/datos" method="post">
                 <button class="btn btn-success btn-sm " onclick=""><i class="far fa-chart-bar fa-3x"></i></button><br>
                 <input type="hidden" name="OPERARIO" value="{{OPERARIO}}">
                 <small for="">VER DATOS</small>
               </form>
-           </div>
-           <div class="col-4 col-md-12">
+            </div>
+            <div class="col-4 col-md-12">
               <form action="/paico/cargardatos" method="post">
                 <button class="btn btn-success btn-sm " onclick=""><i class="fas fa-file-upload fa-3x"></i></button><br>
                 <input type="hidden" name="OPERARIO" value="{{OPERARIO}}">
                 <input type="hidden" name="MAQUINA" id="MAQUINA" value="{{codigo}}">
                 <small for="">CARGAR DATOS</small>
               </form>
-           </div>
+            </div>
+            {{/if}}
            
          </div>
        </div>
