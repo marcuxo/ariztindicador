@@ -8,22 +8,30 @@ const request = require('request');
 const modInject = require('../DDBB/MODEL/Inyeccion');
 const modprodto = require('../DDBB/MODEL/Productos');
 const modOf = require('../DDBB/MODEL/ofs');
+const modUser = require('../DDBB/MODEL/users');
 moment().utc().format();
 
 
 // ruta principal aqui inicia la aplicacion
 router.get('/', async (req, res) => {
-  res.render('login/formulario1')
+  const users = await modUser.find()
+  const user = await users.map(w=>{
+    const {NOMBRE, RUT}=w
+    return {NOMBRE, RUT};
+  })
+  // console.log(user)
+  res.render('login/formulario1',{user})
 });
 
-//1.- menu
+//1.- menu **EN DESARROLLO MODULO DE NUEVA SELECCION DE OF POR PRODUCTO
 router.post('/menu', async(req, res) => {
-  const OPERARIO = req.body.OPERARIO.toUpperCase();
+  const OPERARIO = req.body.OPERARIO;
   const codigo = req.body.producto;
-  // console.log(codigo);
+  // console.log(codigo, OPERARIO);
   var imgbtn = await maqInyectora(codigo);
   var ALERTA = false;
   var maquinaria = "";
+
   if (codigo === "CFS 450 IQF 1") {
     maquinaria = "IQF";
   }
@@ -36,16 +44,89 @@ router.post('/menu', async(req, res) => {
   if(codigo === "CFS 650 TRUTRO SUR"){
     maquinaria = "ISHIDA";
   }
+  if(codigo === "METALQUIMIA"){
+    maquinaria = "METALQUIMIA";
+  }
+
   var _f = new Date();
-  var dia = _f.getDate()-1;
+  var dia = _f.getDate()-1;//dias a tras para generar busqueda de OFs
   var yyyy = _f.getFullYear();
   var mm2 = _f.getMonth()+1;
   var mm = mm2<10?"0"+mm2:mm2;
   var dd = dia<10?"0"+dia:dia;
   var leDate = `${yyyy}-${mm}-${dd}T00:00:00.000+00:00`
   //var queryOF = await modOf.find({FECHA_PRODUCT: {$gte:leDate}}).sort({N_OF: -1}).limit(15);
-  var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}).sort({N_OF: -1});
-  res.render('PAICO/menu', {OPERARIO, ALERTA, codigo, imgbtn, queryOF, maquinaria})
+  // var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}).sort({N_OF: -1});
+  var arr_of = [];
+  var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}, (err,obje)=>{
+    const arrOFS = obje.map(dat=> dat.N_OF)
+    arr_of = arrOFS
+  })
+
+  var arr_data = [];
+  for (let frg = 0; frg < arr_of.length; frg++) {
+    const itm4 = arr_of[frg];
+    await modOf.findOne({N_OF:itm4},async(err,obje)=>{
+      await modprodto.findOne({COD_PRODUCTO: obje.COD_ARTICULO},(err,bjos)=>{
+        //console.log(bjos)
+        if(bjos == null)arr_data.push({PRODUCTO:obje.COD_ARTICULO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_ARTICULO})
+        else arr_data.push({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_ARTICULO})
+        //arr_data.push({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_ARTICULO})
+        //return ({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF})
+        return
+      })
+    })
+  }
+  
+  var arr_select = [];
+  for (let xcvd = 0; xcvd < arr_data.length; xcvd++) {
+    const fdat = arr_data[xcvd];
+    //console.log(fdat)
+    if(arr_select.length == 0)arr_select.push(fdat.COD_PRODUCT)
+    else{
+      var esta = arr_select.includes(fdat.COD_PRODUCT)
+      if(!esta)arr_select.push(fdat.COD_PRODUCT)
+    }
+  }
+  //console.log(arr_select)
+
+  function formatFecha(fech) {
+    var a = new Date(fech);
+    var dd = a.getDate()<10?"0"+a.getDate():a.getDate();
+    var mm = (a.getMonth()+1)<10?"0"+(a.getMonth()+1):(a.getMonth()+1);
+    return dd+"/"+mm
+  }
+  function getProducto(cod_) {
+    var o = true;
+    var cont = 0;
+    while (o) {
+      if(arr_data[cont].COD_PRODUCT == cod_){
+        o = false
+        return arr_data[cont].PRODUCTO
+      }
+      cont = cont+1
+    }
+  }
+  var arr_sel_show = [];
+  var arrtemp1 = [];
+    for (let ret = 0; ret < arr_select.length; ret++) {
+      const sel_fin = arr_select[ret];
+      var tempProduct = '';
+      for (let esdf = 0; esdf < arr_data.length; esdf++) {
+        const sel_int = arr_data[esdf];
+        //console.log(sel_int)
+        //console.log(sel_int.PRODUCTO)
+        if(sel_fin === sel_int.COD_PRODUCT){
+          arrtemp1.push({OF:sel_int.N_OF,FECHA: await formatFecha(sel_int.FECHA)})
+        }
+      }
+      
+      arr_sel_show.push({PRODUCTO:getProducto(sel_fin),OF:arrtemp1})
+      arrtemp1 = [];
+    }
+ //console.log(arr_sel_show)
+
+ res.render('PAICO/menu', {OPERARIO, ALERTA, codigo, imgbtn, queryOF, maquinaria,arr_sel_show})
 });
 
 //--.- menu
@@ -66,18 +147,13 @@ router.get('/menu', async(req, res) => {
 //2.- ruta de login , por ahora solo pide un nombre para que los datos queden guardados a nombre de alguien
 router.post('/inyeccion', async(req, res) => {
   const OPERARIO = req.body.OPERARIO;
-  const maquina = req.body.codigo;
-  const of = req.body.N_OF;
+  const maquina = req.body.MAQUINA;
+  const of1 = req.body.N_OF;
+  const of = req.body.N_OF1;
+  console.log(of1)
   const programa = req.body.PROGRAMA;
   var cod_producto_ = ''
   var producto_ = ''
-  var _f = new Date();
-  var dia = _f.getDate();
-  var yyyy = _f.getFullYear();
-  var mm2 = _f.getMonth()+1;
-  var mm = mm2<10?"0"+mm2:mm2;
-  var dd = dia<10?"0"+dia:dia;
-  var leDate = `${yyyy}-${mm}-${dd}T04:00:00.000+00:00`
   await modOf.find({N_OF: of},(err, obje)=>{
     // console.log(obje)
     if(obje.length==0){
@@ -94,7 +170,9 @@ router.post('/inyeccion', async(req, res) => {
     else(
       producto_ = obje[0].PRODUCTO
     )
-    res.render('PAICO/Inyeccion', { OPERARIO, MAQUINA:maquina, of, COD_PRODUCT: cod_producto_ , PRODUCTO: producto_, programa})
+    setTimeout(() => {
+      res.render('PAICO/Inyeccion', { OPERARIO, MAQUINA:maquina, of, COD_PRODUCT: cod_producto_ , PRODUCTO: producto_, programa}) 
+    }, 3000);
   })
   
 });
@@ -173,17 +251,17 @@ router.post('/saveiny', async(req, res) => {
     var COLOR_INY = 'alert-danger';
   } else if(X_INYECTED < downinyected){
     upordown = 'BAJO'
-    request.post('https://botduty.herokuapp.com/--data--:BAJO:'+X_INYECTED+":"+dbinyected+":"+data.MAQUINA+":"+data.PRODUCTO);
+    //--request.post('https://botduty.herokuapp.com/--data--:BAJO:'+X_INYECTED+":"+dbinyected+":"+data.MAQUINA+":"+data.PRODUCTO);
     var ALERT_INYEC = `% INYECCION FUERA DEL RANGO (BAJO) ${X_INYECTED}% Y DEBERIA ESTAR ENTRE ${downinyected}% Y ${upinyected}%`
     var COLOR_INY = 'alert-danger';
   } else if(downinyected == undefined){
-    upordown = 'SIN REFERENCIA'
+    //--upordown = 'SIN REFERENCIA'
     request.post('https://botduty.herokuapp.com/--data--:'+data.MAQUINA+":"+CODE_ART_NO_REF+":"+X_INYECTED);
     var ALERT_INYEC = `% INYECCION FUERA DEL RANGO (BAJO) ${X_INYECTED}% Y DEBERIA ESTAR ENTRE ${downinyected}% Y ${upinyected}%`
     var COLOR_INY = 'alert-danger';
   }
   
-  //data.push({RANGO: upordown})
+  //console.log(data)
   const schem = new modInject({
     OPERARIO: data.OPERARIO ,
     MAQUINA:data.MAQUINA ,
@@ -194,6 +272,7 @@ router.post('/saveiny', async(req, res) => {
     KG_IN:data.KG_IN ,
     KG_OUT:data.KG_OUT ,
     X_INYECTED:data.X_INYECTED ,
+    X_INYECTED_OPTIMO:dbinyected,
     PRESS_MAQ:data.PRES_MAQ ,
     VEL_CINT_MAQ:data.VEL_CINT_MAQ ,
     VEL_CINT_MAQ:data.VEL_CINT_MAQ ,
@@ -230,12 +309,78 @@ router.post('/saveiny', async(req, res) => {
   var leDate = `${yyyy}-${mm}-${dd}T04:00:00.000+00:00`
   console.log(leDate);
   //var queryOF = await modOf.find({FECHA_PRODUCT: {$gte:leDate}}).sort({N_OF: -1}).limit(15);
-  var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}).sort({N_OF: -1});
+  var arr_of = [];
+  var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}, (err,obje)=>{
+    const arrOFS = obje.map(dat=> dat.N_OF)
+    arr_of = arrOFS
+  })
+
+  var arr_data = [];
+  for (let frg = 0; frg < arr_of.length; frg++) {
+    const itm4 = arr_of[frg];
+    await modOf.findOne({N_OF:itm4},async(err,obje)=>{
+      await modprodto.findOne({COD_PRODUCTO: obje.COD_ARTICULO},(err,bjos)=>{
+        //console.log(bjos)
+        if(bjos == null)arr_data.push({PRODUCTO:obje.COD_ARTICULO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_ARTICULO})
+        else arr_data.push({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_ARTICULO})
+        //arr_data.push({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_ARTICULO})
+        //return ({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF})
+        return
+      })
+    })
+  }
+  
+  var arr_select = [];
+  for (let xcvd = 0; xcvd < arr_data.length; xcvd++) {
+    const fdat = arr_data[xcvd];
+    //console.log(fdat)
+    if(arr_select.length == 0)arr_select.push(fdat.COD_PRODUCT)
+    else{
+      var esta = arr_select.includes(fdat.COD_PRODUCT)
+      if(!esta)arr_select.push(fdat.COD_PRODUCT)
+    }
+  }
+  //console.log(arr_select)
+
+  function formatFecha(fech) {
+    var a = new Date(fech);
+    var dd = a.getDate()<10?"0"+a.getDate():a.getDate();
+    var mm = (a.getMonth()+1)<10?"0"+(a.getMonth()+1):(a.getMonth()+1);
+    return dd+"/"+mm
+  }
+  function getProducto(cod_) {
+    var o = true;
+    var cont = 0;
+    while (o) {
+      if(arr_data[cont].COD_PRODUCT == cod_){
+        o = false
+        return arr_data[cont].PRODUCTO
+      }
+      cont = cont+1
+    }
+  }
+  var arr_sel_show = [];
+  var arrtemp1 = [];
+    for (let ret = 0; ret < arr_select.length; ret++) {
+      const sel_fin = arr_select[ret];
+      var tempProduct = '';
+      for (let esdf = 0; esdf < arr_data.length; esdf++) {
+        const sel_int = arr_data[esdf];
+        //console.log(sel_int)
+        //console.log(sel_int.PRODUCTO)
+        if(sel_fin === sel_int.COD_PRODUCT){
+          arrtemp1.push({OF:sel_int.N_OF,FECHA: await formatFecha(sel_int.FECHA)})
+        }
+      }
+      
+      arr_sel_show.push({PRODUCTO:getProducto(sel_fin),OF:arrtemp1})
+      arrtemp1 = [];
+    }
   var arrgrafpersonal = await grafPesonal(data.CODIGO, COD_OF);
  
   var ALERTA = true;
   var GRAFICO = true;
-  res.render('PAICO/menu', {OPERARIO, ALERTA, TEMPERATURA, COLOR_TEMP, ALERT_INYEC, COLOR_INY, imgbtn, queryOF, GRAFICO, GRAFTITLE: data.PRODUCTO, arrgrafpersonal, codigo: data.MAQUINA})
+  res.render('PAICO/menu', {OPERARIO, ALERTA, TEMPERATURA, COLOR_TEMP, ALERT_INYEC, COLOR_INY, imgbtn, queryOF, GRAFICO, GRAFTITLE: data.PRODUCTO, arrgrafpersonal, codigo: data.MAQUINA,arr_sel_show})
   //res.redirect('./menu')
 });
 
@@ -363,34 +508,12 @@ router.get('/grafico', async(req, res) => {
 
 // ruta que busca los datos en la DDBB y los procesa para mostrarlos.
 router.get('/grafico/iqf1', async (req, res) => {
-  // var query = await modInject.find();
   var anterior = moment().subtract(30, 'days').format('YYYY/MM/DD').split('/').join('-');
   var hoy = moment().format('YYYY/MM/DD').split('/').join('-');
-  // var hoy = moment().format('YYYY/MM/DD').split('/').join('-');
   var TITULO = "CFS 450 IQF 1";
   var fechaInicial = anterior+"T00:00:00.000+00:00";
   var fechaFinal = hoy+"T00:00:00.000+00:00";
   var query1 = await modInject.find({$and: [{FECHA: {$gte: fechaInicial}},{FECHA: {$lte: fechaFinal}},{PROGRAMA: 91}]});
- // procesadorDatos
-  // var query2 = await modInject.find({$and: [{FECHA: {$gte: fechaInicial}},{FECHA: {$lte: fechaFinal}},{MAQUINA: 'CFS 650 IQF 4'}]});
-  // var query3 = await modInject.find({$and: [{FECHA: {$gte: fechaInicial}},{FECHA: {$lte: fechaFinal}},{MAQUINA: 'CFS 650 TRUTRO NORTE'}]});
-  // var query4 = await modInject.find({$and: [{FECHA: {$gte: fechaInicial}},{FECHA: {$lte: fechaFinal}},{MAQUINA: 'CFS 650 TRUTRO SUR'}]});
-
-  //console.log(query1.length);
-  // console.log(query2.length);
-  // console.log(query3.length);
-  // console.log(query4.length);
-  // query.forEach(element => {
-  //   console.log(element.PRODUCTO);
-  // });
-  //console.log(fechaInicial+"///"+fechaFinal);
-  // modelo de datos para grafico
-  // {x: new Date(2020, 01, 06, 10, 00), y: 16.3, markerColor: "green" },//NORMAL
-  // {x: new Date(2020, 01, 06, 11, 00), y: 13.5, markerColor: "red", indexLabel: "\u25Bc",  indexLabelFontColor: "red"},//BAJO
-  // {x: new Date(2020, 01, 06, 12, 00), y: 20.6, markerColor: "red", indexLabel: "\u25B2",  indexLabelFontColor: "red"},//ALTO
-  //console.log(query1[0]);
-
-  //async function procesadorDatos(query1) {
     var codigosAR = [];
     var productosAR1 = [];
     for (let co = 0; co < query1.length; co++) {
@@ -725,19 +848,19 @@ router.get('/getof/:prm', async (req, res) => {
   res.json(queryOF);
 });
 
-// ruta para cargar of masivamente
+// dep -- ruta para cargar of masivamente
 router.post('/uploadof', async (req, res) => {
   const OPERARIO = req.body.OPERARIO;
   res.render('PAICO/loadof', {OPERARIO})
 });
 
-// ruta para cargar inyecciones masivamente
+//dep-- ruta para cargar inyecciones masivamente
 router.post('/uploadinyeccion', async (req, res) => {
   const OPERARIO = req.body.OPERARIO;
   res.render('PAICO/loadinyeccion', {OPERARIO})
 });
 
-// ruta que recive el excel con los datos para ser procesado y cargado
+//dep-- ruta que recive el excel con los datos para ser procesado y cargado
 router.post('/xlsxof', async(req, res) => {
   var OPERARIO = req.body.OPERARIO;
   var eccel = req.files.file;
@@ -783,99 +906,103 @@ router.post('/xlsxof', async(req, res) => {
 });
 
 // ruta que recive el excel con los datos para ser procesado y cargado
-router.post('/xlsxinyeccion', async(req, res) => {
+router.post('/xlsxpamco', async(req, res) => {
   var OPERARIO = req.body.OPERARIO;
-  var eccel = req.files.file;
+  var eccel = req.files.ARCHIVO;
   var libro = xlsx.read(eccel.data);
   var hoja = libro.SheetNames[0];
   var lineas = xlsx.utils.sheet_to_json(libro.Sheets[hoja]);
-  console.log(lineas)
-  for (const iterator of lineas) {
-    var producto_ = await modOf.find({N_OF: iterator.OF})
-    var porcent_ =  await porcentil(iterator.KG_IN, iterator.KG_OUT);
-    //console.log(producto_);
-    var inyeccion = new modInject({
-      OF: iterator.OF,
-      FECHA: formatExcelINYECTFECHA(iterator.FECHA, iterator.HORA),
-      HORA: formatExcelINYECTHORA(iterator.FECHA, iterator.HORA),
-      KG_IN: iterator.KG_IN,
-      KG_OUT: iterator.KG_OUT,
-      VEL_CINT_MAQ: iterator.VEL_CINTA,
-      GOLP_X_MAQ: iterator.GOLP_X_MIN,
-      PRESS_MAQ: iterator.PRESION,
-      TEMP_MAQ: iterator.TEMP_SALMUERA,
-      PRODUCTO: producto_[0].NOM_ARTICULO,
-      MAQUINA: producto_[0].LINEA,
-      SUPERVISADO: "TO-FILE",
-      X_INYECTED: porcent_,
-      RANGO: await isuporlow(porcent_, producto_[0].COD_ARTICULO),
-      FILE: OPERARIO,
-      PROGRAMA: producto_[0].N_PROGRAM
+
+  function formHora(codestr) {
+    var fecha = ((codestr - (25567 + 1)) * 86400 * 1000);
+    var fecha1 = new Date(fecha);
+    var hora = fecha1.getUTCHours()<10?"0"+fecha1.getUTCHours():fecha1.getUTCHours();
+    var mm = fecha1.getUTCMinutes()<10?"0"+fecha1.getUTCMinutes():fecha1.getUTCMinutes();
+    var spt = hora+':'+mm
+    return spt;
+  }
+  function formFecha(codeFCA) {
+    var f1 = codeFCA.split('.')
+    var f2 = f1[2]+"-"+f1[1]+"-"+f1[0]
+    return f2;
+  }
+  function formPorcent(codeX) {
+    var c1 = codeX * 100
+    var c2 = Math.round(c1)
+    return c2;
+  }
+  function IsOnRange(por, optmo) {
+    if(Number(por) < Number(optmo)) return "BAJO"
+    if(Number(por) > Number(optmo)) return "ALTO"
+  }
+
+  //recorido de excel
+  var arrdata = [];
+  for (let gr = 0; gr < lineas.length; gr++) {
+    const itm = lineas[gr];
+    var fecha = await formFecha(itm['Fecha'])
+    var hora = await formHora(itm['Hora'])
+    var fechora = fecha+"T"+hora+':00.000Z';
+    var forcent = formPorcent(itm['% de Inyeccion'])
+    //console.log(fechora)
+    await consultCPX(itm['Codigo'])
+    const inser = await modInject({
+      OF: itm['OF'],
+      FECHA: fechora,
+      HORA: hora,
+      KG_IN: itm['kg Entrada'],
+      KG_OUT: itm['Kg Salida'],
+      PRODUCTO: itm['Codigo'],
+      MAQUINA: itm['LINEA'],
+      SUPERVISADO: itm['Supervisor'].toUpperCase(),
+      OPERARIO: itm['Operador'].toUpperCase(),
+      X_INYECTED: forcent,
+      RANGO: await IsOnRange(forcent,xinyectOPTMOfolder),
+      FILE: "TO-FILE-ONE",
+      X_INYECTED_OPTIMO:xinyectOPTMOfolder
     });
-    var insave = inyeccion.save();
+    const sert = inser.save()
   }
-  // FUNCION QUE RECIVE LA DECHA Y HORA EN FORMATO NUMERICO Y QUE FORMATEA LA FECHA PARA JAVASCRIPT DE UN CODIGO DE EXCEL
-  function formatExcelINYECTFECHA(fecha01, hora01) {
-    var fecha_ = fecha01+hora01;
-    var resultado = ((fecha_* 86400)-2209161600)*1000;
-    var fecha = new Date(resultado)//1600128000000
-    // console.log(fecha_);
-    return fecha;
-  }
-  // FUNCION QUE RECIVE LA DECHA Y HORA EN FORMATO NUMERICO Y QUE FORMATEA LA HORA PARA JAVASCRIPT DE UN CODIGO DE EXCEL
-  function formatExcelINYECTHORA(fecha01, hora01) {
-    var fecha_ = fecha01+hora01;
-    var resultado = ((fecha_* 86400)-2209161600)*1000;
-    var fecha = new Date(resultado)//1600128000000
-    var hh, mm, hora;
-    hh = fecha.getHours()<10?"0"+fecha.getHours():fecha.getHours();
-    mm = fecha.getMinutes()<10?"0"+fecha.getMinutes():fecha.getMinutes();
-    hora = hh+":"+mm;
-    return hora;
-  }
-  async function getmaquinada(of) {
-    var consultaof = await modOf.find({ N_OF: of});
-    for (const iterator of consultaof) {
-      return iterator.NOM_ARTICULO;      
-      // return consultaof[0].NOM_ARTICULO;
-    }
-  }
-  async function getproducto(of) {
-    var consultaof = await modOf.find({ N_OF: of});
-    for (const iterator of consultaof) {
-      return iterator.LINEA;      
-      // return consultaof[0].NOM_ARTICULO;
-    }
-  }
-  // FUNCION QUE RECIVE LOS KILOS DE ENTRADA Y SALIDA CON LOS QUE CALCULA EL PORCENTAGE DE INYECCION ACUAL 
-  async function porcentil(kin, kout) {
-    var dato1 = kout - kin;
-    var dato2 = (dato1*100)/kin;
-    var dcimo = dato2.toFixed(2)
-    return dcimo;
-  }
+  
+  
+  
   // FUNCIO QUE RECIVE EL PORCENTAGE DE INYECCION ACTUAL MAS EL CODIGO DEL PRODUCTO PARA BUSCAR EL CODIGO EN LA DB Y TRAER EL PORCENTAGE DE INYECCION OPTIMO
   // PARA CALCULAR EL PORCENTAGE ALTO Y BAJO Y COMPARARLO CON EL PORCENTAGE DE INYECCION ACTUAL
-  async function isuporlow(porcent01, cod_pro) {
-    var query = await modprodto.find({COD_PRODUCTO: cod_pro});
-    for (const iterator of query) {
-      //console.log(iterator);
-      var xdb = iterator.POR_INY_OPTMO;
-      var alto = (xdb*0.1)+xdb;
-      var bajo = xdb-(xdb*0.1);
-      if(porcent01 > alto) {
-        return "ALTO"
-      }
-      if(porcent01 < bajo) {
-        return "BAJO"
-      }
-      else {
-        return "NORMAL"
-      }
-    }
-  }
-  res.render('PAICO/loadinyeccion', { TOTAL: lineas.length, OPERARIO });
+  var codigoFolder = ''
+  var productoFolder = ''
+  var xinyectOPTMOfolder = ''
+  async function consultCPX(cod_pro) {
+    if(cod_pro === codigoFolder){
+      return
+    } else {
+      var query = await modprodto.findOne({COD_PRODUCTO: cod_pro});
+      //console.log('con '+query.PRODUCTO, query.POR_INY_OPTMO)
+      codigoFolder = cod_pro;
+      productoFolder = query.PRODUCTO;
+      xinyectOPTMOfolder = query.POR_INY_OPTMO;
+    };
+  };
+
+  res.status(200).json({status:200, data: lineas.length})
 });
+
+// ruta que permite subri el pamco via excel
+router.post('/cargardatos',async(req, res) => {
+  const {OPERARIO, MAQUINA} = req.body;
+  //console.log(OPERARIO, MAQUINA)
+  res.render('PAICO/cargardatos',{OPERARIO})
+})
+
+//ruta que permite visualizar el menu de datos
+router.post('/datos',async(req, res) => {
+  const {OPERARIO, MAQUINA} = req.body;
+
+  const of = await modInject.find({MAQUINA: "CFS 650 TRUTRO NORTE"})
+  
+  const oof = await of.map(nar => nar.X_INYECTED)
+  //console.log(oof)
+  res.render('PAICO/datos',{OPERARIO})
+})
 
 async function loadOF(){
   var arraOF = []
@@ -936,4 +1063,113 @@ async function grafPesonal(producto, _of) {
   return data_grafica;
 }
 
+// //funcion temporal para agregar los datos de los operadores de la plataforma
+// async function addData_() {
+//   var arr_save = [
+//     {NOMBRE: 'OLGUIN OSCAR', RUT: '13558567-K',MAQUINA: 'IQF', BOSS_LINE: 'GUILLERMO NARVAEZ', STADO: true},
+//     {NOMBRE: 'TORO IAIAS', RUT: '20464275-3',MAQUINA: 'IQF', BOSS_LINE: 'GUILLERMO NARVAEZ', STADO: true},
+//     {NOMBRE: 'NARANJO ALEJANDRO', RUT: '13771548-1',MAQUINA: 'IQF', BOSS_LINE: 'GUILLERMO NARVAEZ', STADO: true},
+//     {NOMBRE: 'ROJAS MAURICIO', RUT: '10374175-0',MAQUINA: 'IQF', BOSS_LINE: 'GUILLERMO NARVAEZ', STADO: true},
+//     {NOMBRE: 'HUERTA PATRICIO', RUT: '18960237-5',MAQUINA: 'METALQUIMIA', BOSS_LINE: 'GUILLERMO NARVAEZ', STADO: true},
+//     {NOMBRE: 'IBARRA CRISTOPHER', RUT: '15533225-5',MAQUINA: 'METALQUIMIA', BOSS_LINE: 'GUILLERMO NARVAEZ', STADO: true},
+//     {NOMBRE: 'LUIS RUBIO', RUT: '15964744-7',MAQUINA: 'ISHIDA', BOSS_LINE: 'OCTAVIO MUNOZ', STADO: true},
+//     {NOMBRE: 'JONATHAN VARGAS', RUT: '17081291-3',MAQUINA: 'ISHIDA', BOSS_LINE: 'OCTAVIO MUNOZ', STADO: true},
+//     {NOMBRE: 'CARLOS LAZO', RUT: '11628677-7',MAQUINA: 'ISHIDA', BOSS_LINE: 'OCTAVIO MUNOZ', STADO: true},
+//     {NOMBRE: 'LUIS FARIAS', RUT: '13771600-3',MAQUINA: 'ISHIDA', BOSS_LINE: 'OCTAVIO MUNOZ', STADO: true},
+//     {NOMBRE: 'JAVIER GALLEGUILLOS', RUT: '19411323-4',MAQUINA: 'ISHIDA', BOSS_LINE: 'OCTAVIO MUNOZ', STADO: true},
+//     {NOMBRE: 'JEUDY DOMINIQUE', RUT: '25970249-6',MAQUINA: 'ISHIDA', BOSS_LINE: 'OCTAVIO MUNOZ', STADO: true},
+//     {NOMBRE: 'RODRIGUEZ MIGUE', RUT: '26320174-4',MAQUINA: 'ISHIDA', BOSS_LINE: 'OCTAVIO MUNOZ', STADO: true},
+//   ]
+//   await modUser.insertMany(arr_save)
+// }
+// addData_()
+
 module.exports = router;
+
+
+// //1.- menu **EN DESARROLLO MODULO DE NUEVA SELECCION DE OF POR PRODUCTO
+// router.post('/menu', async(req, res) => {
+//   const OPERARIO = req.body.OPERARIO.toUpperCase();
+//   const codigo = req.body.producto;
+//    //console.log(codigo, OPERARIO);
+//   var imgbtn = await maqInyectora(codigo);
+//   var ALERTA = false;
+//   var maquinaria = "";
+
+//   if (codigo === "CFS 450 IQF 1") {
+//     maquinaria = "IQF";
+//   }
+//   if(codigo === "CFS 650 IQF 4"){
+//     maquinaria = "IQF";
+//   }
+//   if(codigo === "CFS 650 TRUTRO NORTE"){
+//     maquinaria = "ISHIDA";
+//   }
+//   if(codigo === "CFS 650 TRUTRO SUR"){
+//     maquinaria = "ISHIDA";
+//   }
+//   if(codigo === "METALQUIMIA"){
+//     maquinaria = "METALQUIMIA";
+//   }
+
+//   var _f = new Date();
+//   var dia = _f.getDate()-2;//dias a tras para generar busqueda de OFs
+//   var yyyy = _f.getFullYear();
+//   var mm2 = _f.getMonth()+1;
+//   var mm = mm2<10?"0"+mm2:mm2;
+//   var dd = dia<10?"0"+dia:dia;
+//   var leDate = `${yyyy}-${mm}-${dd}T00:00:00.000+00:00`
+//   //var queryOF = await modOf.find({FECHA_PRODUCT: {$gte:leDate}}).sort({N_OF: -1}).limit(15);
+//   // var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}).sort({N_OF: -1});
+//   var arr_of = [];
+//   var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}, (err,obje)=>{
+//     const arrOFS = obje.map(dat=> dat.N_OF)
+//     arr_of = arrOFS
+//   })
+
+//   var arr_data = [];
+//   for (let frg = 0; frg < arr_of.length; frg++) {
+//     const itm4 = arr_of[frg];
+//     await modOf.findOne({N_OF:itm4},async(err,obje)=>{
+//       await modprodto.findOne({COD_PRODUCTO: obje.COD_ARTICULO},(err,bjos)=>{
+//         //console.log(bjos)
+//         arr_data.push({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_PRODUCTO})
+//         //return ({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF})
+//         return
+//       })
+//     })
+//   }
+  
+//   var arr_select = [];
+//   for (let xcvd = 0; xcvd < arr_data.length; xcvd++) {
+//     const fdat = arr_data[xcvd];
+//     if(arr_select.length == 0)arr_select.push(fdat.PRODUCTO)
+//     else{
+//       var esta = arr_select.includes(fdat.PRODUCTO)
+//       if(!esta)arr_select.push(fdat.PRODUCTO)
+//     }
+//   }
+//   function formatFecha(fech) {
+//     var a = new Date(fech);
+//     var dd = a.getDate()<10?"0"+a.getDate():a.getDate();
+//     var mm = (a.getMonth()+1)<10?"0"+(a.getMonth()+1):(a.getMonth()+1);
+//     return dd+"/"+mm
+//   }
+//   var arr_sel_show = [];
+//   var arrtemp1 = [];
+//     for (let ret = 0; ret < arr_select.length; ret++) {
+//       const sel_fin = arr_select[ret];
+//       for (let esdf = 0; esdf < arr_data.length; esdf++) {
+//         const sel_int = arr_data[esdf];
+//         //console.log(sel_int)
+//         if(sel_fin === sel_int.PRODUCTO){
+//           arrtemp1.push({OF:sel_int.N_OF,FECHA: await formatFecha(sel_int.FECHA)})
+//         }
+//       }
+//       arr_sel_show.push({PRODUCTO:sel_fin,OF:arrtemp1})
+//       arrtemp1 = [];
+//     }
+// // console.log(arr_sel_show)
+
+//  res.render('PAICO/menu', {OPERARIO, ALERTA, codigo, imgbtn, queryOF, maquinaria,arr_sel_show})
+// });

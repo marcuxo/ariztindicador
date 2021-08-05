@@ -22,7 +22,10 @@
           <label class="lead">{{codigo}}</label><br>
         <input type="image" name="img_maquina" class="" src="{{imgbtn}}" height="200px" style="border: 2px black solid;border-radius: 10px; background-color: rgba(0, 255, 255, 0.22);"> <br>
         <label for="img_maquina">INGRESAR CONTROL DE INYECCION</label>
-        <select name="N_OF" id="N_OF" class="form-control form-control-sm rounded-pill">
+        <input type="hidden" name="OPERARIO" value="{{OPERARIO}}">
+        <input type="hidden" name="MAQUINA" id="MAQUINA" value="{{codigo}}">
+        <input type="hidden" name="PROGRAMA" value="{{programa}}"> 
+        {{!-- <select name="N_OF" id="N_OF" class="form-control form-control-sm rounded-pill">
           <option class="text-monospace" value="000">Seleccione una OF</option>
           {{#each queryOF}}
             {{#each this}}
@@ -31,32 +34,60 @@
               {{/if}}
             {{/each}}
           {{/each}}
+        </select> --}}
+
+        <select name="N_OF1" id="N_OF1" class="form-control form-control-sm rounded-pill">
+          <option class="text-monospace" value="000">Seleccione una OF</option>
+          {{#each arr_sel_show}}
+            <optgroup label="{{PRODUCTO}}">
+              {{#each OF}}
+                <option class="text-monospace" value="{{OF}}">Of:{{OF}} Fecha:{{FECHA}}</option>
+              {{/each}}
+            </optgroup>
+          {{/each}}
         </select>
-        <input type="hidden" name="OPERARIO" value="{{OPERARIO}}">
-        <input type="hidden" name="codigo" id="codigo" value="{{codigo}}">
-        <input type="hidden" name="PROGRAMA" value="{{programa}}"> 
+
         </form>
        </div>
        <div class="col-12 col-md-6 pt-5">
          <div class="row">
-           <div class="col-12 col-md-12">
-              <a href="./" class="btn btn-danger btn-sm " onclick=""><i class="fas fa-exchange-alt fa-3x"></i></a><br>
-              <label for="">CAMBIAR EQUIPO</label>
+            <div class="col-4 col-md-12">
+              <a href="./" class="btn btn-danger btn-sm " onclick="erasermachin()"><i class="fas fa-exchange-alt fa-3x"></i></a><br>
+              <small for="">CAMBIAR EQUIPO</small>
+            </div>
+            <div class="col-4 col-md-12">
+              <a href="./" class="btn btn-danger btn-sm " onclick="eraseruser()"><i class="fas fa-user-cog fa-3x"></i></a><br>
+              <small for="">CAMBIAR USUARIO</small>
+            </div>
+            <script>
+              function eraseruser(){
+                sessionStorage.removeItem('usuario')
+              }
+              function erasermachin(){
+                sessionStorage.removeItem('maquina')
+              }
+            </script>
+
+            <div class="col-4 col-md-12">
+              <form action="/paico/datos" method="post">
+                <button class="btn btn-success btn-sm " onclick=""><i class="far fa-chart-bar fa-3x"></i></button><br>
+                <input type="hidden" name="OPERARIO" value="{{OPERARIO}}">
+                <small for="">VER DATOS</small>
+              </form>
            </div>
-           <div class="col-6 col-md-12 invisible">
-            <form action="/paico/uploadinyeccion" method="post">
-              <button class="btn btn-primary btn-sm " onclick=""><i class="fas fa-file-upload fa-3x"></i></button><br>
-              <label for="">ARCHIVOS INYECCION</label>
-              <input type="hidden" name="OPERARIO" value="{{OPERARIO}}">
-            </form>
+           <div class="col-4 col-md-12">
+              <form action="/paico/cargardatos" method="post">
+                <button class="btn btn-success btn-sm " onclick=""><i class="fas fa-file-upload fa-3x"></i></button><br>
+                <input type="hidden" name="OPERARIO" value="{{OPERARIO}}">
+                <input type="hidden" name="MAQUINA" id="MAQUINA" value="{{codigo}}">
+                <small for="">CARGAR DATOS</small>
+              </form>
            </div>
+           
          </div>
-          
-          
        </div>
       </div>
     </div>
-    
   </div>
 </div>
 </div>
@@ -87,12 +118,21 @@
           </button>
         </div>
     {{/if}}
+      {{!-- <script>
+        setTimeout(() => {
+          alerta1.classList.remove('show');
+          alerta2.classList.remove('show');
+          alerta3.classList.remove('show');
+        }, 5000);
+      </script> --}}
+
+          
       </div>
 </div>
       <div class="container fixed-top ">
         <div class="row">
           <div class="col text-right ">
-            <small class=" font-italic mainmenu p-2">{{OPERARIO}} <a href="./" title="SALIR O CAMBIAR NOMBRE"><i class="fas fa-times-circle text-danger "></i></a></small>
+            <small class=" font-italic mainmenu p-2"><i class="fas fa-user"></i> {{OPERARIO}}</small>
             <img src="/img/logo_ariztia.png" alt="" class="" style="height: 50PX;">
           </div>
         </div>
@@ -191,14 +231,10 @@
     <script type="text/javascript" src="/js/jquery-1.11.1.js"></script>
     <script type="text/javascript" src="/js/stockChart.js"></script>
 {{/if}} --}}
-      <script>
-        var codigo = document.getElementById('codigo')
-        codigo.value = sessionStorage.getItem('codigo')
-
-        
+      <script>        
 
         var formulario = document.getElementById('cargaInyeccion');
-        var n_of = document.getElementById('N_OF');
+        var n_of = document.getElementById('N_OF1');
         formulario.addEventListener('submit', function(e){
           console.log(n_of.value)
           if(n_of.value == "000"){
@@ -221,7 +257,14 @@
             alertas_dis.classList.add('invisible')
           }, 10000);
         }
-        setTimeout(() => {
-            modal.classList.add('invisible')
-          }, 5000);
+          
       </script>
+
+      {{!-- {{#each arr_sel_show}}
+        <script>
+          console.log("{{PRODUCTO}}")
+          {{#each OF}}
+            console.log("-Of:{{OF}} -Fecha:{{FECHA}}")
+          {{/each}}
+        </script>
+      {{/each}} --}}

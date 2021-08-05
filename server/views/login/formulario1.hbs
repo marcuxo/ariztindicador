@@ -16,7 +16,7 @@
 
 </style>
 <div class="container">
-    <form action="/paico/menu" method="post">
+    <form action="/paico/menu" method="post" onsubmit="checkForm(event)">
   <div class="row full">
     <div class="col-12 col-md-8 centro">
      <div class="row">
@@ -24,17 +24,24 @@
           <img src="/img/logo_ariztia.png" alt="" class="img-fluid">
         </div>
         <div class="col-12 col-md-6 py-5 mainmenu">
-          <label class="text-secondary">INGRESE SU NOMBRE </label>
-          <input type="text" class="form-control form-control-sm rounded-pill w-100" name="OPERARIO" id="OPERARIO" placeholder="Ejemplo: JUAN CORLEONE O JCORLEONE" style="text-transform:uppercase;" required>
-          <label class="text-secondary mt-3">SELECCIONE LINEA</label>
-          <select name="producto" id="producto" class="form-control form-control-sm rounded-pill w-100" required>
-              <option class="text-monospace">SELECCIONE LINEA</option>
-              <option class="text-monospace" >CFS 450 IQF 1</option>
-              <option class="text-monospace" >CFS 650 IQF 4</option>
-              <option class="text-monospace" >CFS 650 TRUTRO NORTE</option>
-              <option class="text-monospace" >CFS 650 TRUTRO SUR</option>
+          <label class="text-secondary">SELECCIONE USUARIO </label>
+          {{!-- <input type="text" class="form-control form-control-sm rounded-pill w-100" name="OPERARIO" id="OPERARIO" placeholder="Ejemplo: JUAN CORLEONE O JCORLEONE" style="text-transform:uppercase;" required> --}}
+          <select name="OPERARIO" id="OPERARIO" class="form-control form-control-sm rounded-pill w-100" onchange="savecode()" required>
+            <option class="text-monospace" value="000">SELECCIONE USUARIO</option>
+            {{#each user}}
+              <option class="text-monospace" value="{{NOMBRE}}">{{RUT}}</option>
+            {{/each}}
+            
           </select>
-          <button type="submit" class="btn btn-sm btn-info rounded-pill w-100 mt-4" onmouseover="savecode()">INGRESAR</button>
+          <label class="text-secondary mt-3">SELECCIONE LINEA</label>
+          <select name="producto" id="producto" class="form-control form-control-sm rounded-pill w-100" onchange="savecode()" required>
+            <option class="text-monospace" value="000">SELECCIONE LINEA</option>
+            <option class="text-monospace" >CFS 450 IQF 1</option>
+            <option class="text-monospace" >CFS 650 IQF 4</option>
+            <option class="text-monospace" >CFS 650 TRUTRO NORTE</option>
+            <option class="text-monospace" >CFS 650 TRUTRO SUR</option>
+          </select>
+          <button type="submit" class="btn btn-sm btn-info rounded-pill w-100 mt-4">INGRESAR</button>
         </div>
      </div>
     </div>
@@ -46,8 +53,25 @@
 </div>
 <script>
   function savecode(){
-    var code_ = document.getElementById('producto').value;
-    sessionStorage.setItem('codigo',code_)
+    var maquina_ = document.getElementById('producto').value;
+    var user_ = document.getElementById('OPERARIO').value;
+    sessionStorage.setItem('maquina',maquina_)
+    sessionStorage.setItem('usuario', user_)
     //console.log(code_)
   }
+
+  if(sessionStorage.getItem('usuario')){
+    document.getElementById('OPERARIO').value = sessionStorage.getItem('usuario');
+  }
+  if(sessionStorage.getItem('maquina')){
+    document.getElementById('producto').value = sessionStorage.getItem('maquina');
+  }
+
+  function checkForm(e) {
+    
+    var maquina_ = document.getElementById('producto').value;
+    var user_ = document.getElementById('OPERARIO').value;
+    if(maquina_ === "000" || user_ === "000")e.preventDefault();
+  }
+  
 </script>

@@ -1,0 +1,91 @@
+<div class="container mainmenu mt-5">
+  <div class="row py-5">
+    <div class="col text-center">
+      <div class="col text-left pb-5">
+        <h5>Carga de Datos</h5>
+      </div>
+      <form enctype="multipart/form-data" onsubmit="uploadXfile(event)">
+        <input type="file" name="file" id="file" onchange="valfile()" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+        <label for="file" id="namefile">Seleccionar Archivo de PAMCO <i class="fas fa-file-upload" ></i></label><br><br>
+        <input type="submit" class="btn btn-success btn-sm py-2 w-50" value="CARGAR">
+      </form>
+    </div>
+  </div>
+</div>
+
+ <div class="container fixed-top ">
+    <div class="row">
+      <div class="col text-right ">
+        <small class=" font-italic mainmenu p-2">{{OPERARIO}} <a href="./" title="SALIR O CAMBIAR NOMBRE"><i class="fas fa-times-circle text-danger "></i></a></small>
+        <img src="/img/logo_ariztia.png" alt="" class="" style="height: 50PX;">
+        <a href="javascript:history.back()" class="btn btn-info btn-sm float-left"><i class="fas fa-arrow-left"></i> Volver Atrás</a>
+      </div>
+    </div>
+  </div>
+  
+
+<style>
+   input[type="file"]#file {
+    top: -25px;
+    margin: auto;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: relative;
+    z-index: -1;
+  }
+  #namefile {
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgb(81, 176, 197);
+    box-shadow: 5px 5px 5px rgb(92, 92, 92);
+    cursor: pointer;
+  }
+  #namefile:hover {
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgb(75, 153, 170);
+    box-shadow: 3px 3px 3px rgb(92, 92, 92);
+    cursor: pointer;
+  }
+</style>
+<script>
+  
+    var lefi = document.getElementById('file')
+    var nmfile = document.getElementById('namefile')
+  function valfile() {
+    var nm = lefi.value.split('\\')
+    var nmn = nm.pop();
+    if(nm.length == 0)nmfile.innerHTML = `Cargar Archivo de PAMCO <i class="fas fa-file-upload"></i>`
+    else nmfile.innerHTML = `<i class="fas fa-file-upload"></i> ${nmn}`
+  };
+
+  var url = '/paico/xlsxpamco';
+  var archivo = document.querySelector('input[type="file"]');
+  var TKN = document.getElementById('TOKEN');
+  function uploadXfile(e) {
+    e.preventDefault()
+    if(lefi.value == '')return swal('Alerta','Debes Seleccionar un archivo!!','warning')
+    const formdata = new FormData();
+    formdata.append('ARCHIVO', archivo.files[0])
+    //formdata.append('TOKEN', TKN.value)
+    fetch(url, {
+      method: 'POST',
+      body: formdata
+    })
+    .then(res => res.json())
+    .then(resp => {
+      console.log(resp)
+      if(resp.status==200) {
+        swal('Great!!','Se ingresaron 41 lineas de datos','success')
+        nmfile.innerHTML = `<i class="fas fa-file-upload"></i> SELECCIONAR ARCHIVO`
+        lefi.value = ''
+      } else {
+        swal('Alerta!!','los datos no fueron ingresados en la base de datos.','warning')
+      }
+    })
+  }
+</script>
