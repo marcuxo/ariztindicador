@@ -4,7 +4,8 @@
   "description": "Proyecto de inyeccion",
   "main": "server/ariztindicador.js",
   "scripts": {
-    "dev": "nodemon server/ariztindicador.js"
+    "dev": "nodemon server/ariztindicador.js",
+    "start":"node server/ariztindicador.js"
   },
   "keywords": [],
   "author": "MarcoUrrutiaMolina(marcuXo)",
