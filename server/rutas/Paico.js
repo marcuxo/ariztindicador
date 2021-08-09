@@ -49,7 +49,7 @@ router.post('/menu', async(req, res) => {
     imgbtn = '/img/cfs450_1.png';
   }
   if(codigo === "METALQUIMIA"){
-    maquinaria = "METALQUIMIA";
+    maquinaria = "INYEC";
     imgbtn = '/img/INYEC.png';
   }
 
@@ -65,6 +65,7 @@ router.post('/menu', async(req, res) => {
   var arr_of = [];
   var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}, (err,obje)=>{
     const arrOFS = obje.map(dat=> dat.N_OF)
+    console.log(obje)
     arr_of = arrOFS
   })
 
