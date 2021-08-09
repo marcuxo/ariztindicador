@@ -44,15 +44,13 @@
     <form action="/paico/saveiny" method="post" id="formulario">
         <p class="lead text-right">% INYECCION CADA 15 MIN</p>
         <div class="row">
+          
           <div class="col-12 col-md-6">
-            <label for="">OPERARIO</label>
-            <input type="text" name="OPERARIO" id="OPERARIO" class="form-control form-control-sm col rounded-pill" value="{{OPERARIO}}" readonly>
-          </div>
-          <div class="col-12 col-md-6">
+            <input type="hidden" name="OPERARIO" id="OPERARIO" class="form-control form-control-sm col rounded-pill" value="{{OPERARIO}}" readonly>
             <label for="">MAQUINA</label>
             <input type="text" name="MAQUINA" id="MAQUINA" class="form-control form-control-sm col rounded-pill" value="{{MAQUINA}}" readonly>
           </div>
-          <div class="col-12">
+          <div class="col-12 col-md-6">
             <input type="hidden" name="COD_OF" id="COD_OF" value="{{of}}">
             <input type="hidden" name="CODIGO" id="CODIGO" value="{{COD_PRODUCT}}">
             <input type="hidden" name="PROGRAMA" id="PROGRAMA" value="{{programa}}">
@@ -112,8 +110,20 @@
             <input type="time" name="FILTER_CLEAM_MAQ" id="FILTER_CLEAM_MAQ" class="form-control form-control-sm col rounded-pill">
           </div>
           <div class="col-12 col-md-6">
-            <label for="" class="">SUPERVISOR DE INYECCION</label>
-            <input type="text" name="SUPER_INYECT" id="SUPER_INYECT" class="form-control form-control-sm col rounded-pill" placeholder="INGRESE NOMBRE DE SUPERVISOR DE INYECCION">
+            <label for="" class="">SUPERVISOR DE INYECCION</label><br>
+            <div class="row">
+              <div class="col-6">
+                <label for="sup_si">SUPERVISADO</label>
+              <input type="radio" name="SUPER_INYECT" value="SUPERVISADO" id="sup_si"> 
+              </div>
+              <div class="col-6">
+                <input type="radio" name="SUPER_INYECT" value="NO-SUPERVISADO" id="sup_no">
+              <label for="sup_no">NO SUPERVISADO</label>
+              </div>
+            </div>
+              
+              
+            {{!-- <input type="text" name="SUPER_INYECT" id="SUPER_INYECT" class="form-control form-control-sm col rounded-pill" placeholder="INGRESE NOMBRE DE SUPERVISOR DE INYECCION"> --}}
           </div>
         </div>
 

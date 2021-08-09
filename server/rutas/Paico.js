@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
 router.post('/menu', async(req, res) => {
   const OPERARIO = req.body.OPERARIO;
   const codigo = req.body.producto;
-  console.log(codigo, OPERARIO);
+  //console.log(codigo, OPERARIO);
   var imgbtn = '';
   var ALERTA = false;
   var maquinaria = "";
@@ -157,7 +157,6 @@ router.post('/inyeccion', async(req, res) => {
   const maquina = req.body.MAQUINA;
   const of1 = req.body.N_OF;
   const of = req.body.N_OF1;
-  console.log(of1)
   const programa = req.body.PROGRAMA;
   var cod_producto_ = ''
   var producto_ = ''
@@ -217,11 +216,11 @@ router.post('/saveiny', async(req, res) => {
   var { OPERARIO } = req.body;
   var { COD_OF } = req.body;//OF
   var { CODIGO } = req.body;//PRODUCTO
-  //console.log(CODIGO)
   var { X_INYECTED } = req.body;
   var { MAQUINA } = req.body;
   var { TEMP_MAQ } = req.body;
   var { SUPER_INYECT } = req.body;
+  console.log(SUPER_INYECT)
   var programa = req.body.PROGRAMA;
   var inyectParameter = 0.1; //porcentage de inyeccion
   var downinyected;
@@ -330,7 +329,7 @@ router.post('/saveiny', async(req, res) => {
   var mm = mm2<10?"0"+mm2:mm2;
   var dd = dia<10?"0"+dia:dia;
   var leDate = `${yyyy}-${mm}-${dd}T04:00:00.000+00:00`
-  console.log(leDate);
+  //console.log(leDate);
   //var queryOF = await modOf.find({FECHA_PRODUCT: {$gte:leDate}}).sort({N_OF: -1}).limit(15);
   var arr_of = [];
   var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}, (err,obje)=>{
