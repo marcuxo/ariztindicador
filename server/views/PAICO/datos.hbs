@@ -2,29 +2,11 @@
 <div class="container mainmenu p-3 mt-5">
   <div class="row">
     <div class="col-12">
-      {{!-- <div class="row">
-        <div class="col-12 col-md-4 py-2">
-          <select name="MAQUINA" id="MAQUINA" class="form-control form-control-sm" required>
-            <option class="text-monospace">SELECCIONE LINEA</option>
-            <option class="text-monospace">CFS 450 IQF 1</option>
-            <option class="text-monospace">CFS 650 IQF 4</option>
-            <option class="text-monospace">CFS 650 TRUTRO NORTE</option>
-            <option class="text-monospace">CFS 650 TRUTRO SUR</option>
-          </select>
-        </div>
-        <div class="col-12 col-md-4 py-2">
-          <input type="datetime-local" class="form-control form-control-sm" name="FECHA" id="FECHA">
-        </div>
-        <div class="col-12 col-md-4 py-2">
-          dd
-        </div>
-        
-      </div> --}}
       <div class="row text-center px-3">
-        <div class="col-3 border rounded"><small>CFS 450 IQF 1</small><p class="lead">5800 datos</p></div>
-        <div class="col-3 border rounded"><small>CFS 650 IQF 4</small><p class="lead">5800 datos</p></div>
-        <div class="col-3 border rounded"><small>CFS 650 TRUTRO NORTE</small><p class="lead">5800 datos</p></div>
-        <div class="col-3 border rounded"><small>CFS 650 TRUTRO SUR</small><p class="lead">5800 datos</p></div>
+				{{#each countMachn}}
+				<div class="col-6 col-md-2 border rounded"><small>{{MAQUINA}}: </small><label class="lead">{{COUNT}}</label></div>
+				{{/each}}
+				<div class="col-6 col-md-2 border rounded"><small>TODA LA DATA </small></div>
       </div>
     </div>
     <div class="col py-5">
@@ -40,6 +22,7 @@
     <div class="col text-right ">
       <small class=" font-italic mainmenu p-2">{{OPERARIO}} <a href="./" title="SALIR O CAMBIAR NOMBRE"><i class="fas fa-times-circle text-danger "></i></a></small>
       <img src="/img/logo_ariztia.png" alt="" class="" style="height: 50PX;">
+			<a href="javascript:history.back()" class="btn btn-info btn-sm float-left"> < Atrás</a>
     </div>
   </div>
 </div>
@@ -139,6 +122,7 @@ var visitorsData = {
 			{ label: "CFS 650 IQF 4", y: 60, name: "CFS 650 IQF 4", color:"#00bdff"},
 			{ label: "CFS 650 TRUTRO NORTE", y: 75, name: "CFS 650 TRUTRO NORTE", color:"#00ffc9"},
 			{ label: "CFS 650 TRUTRO SUR", y: 66, name: "CFS 650 TRUTRO SUR", color:"#d1ee00"},
+			{ label: "METALQUIMIA", y: 68, name: "METALQUIMIA", color:"#d1aa05"},
 		]
 	}],
 	"CFS 450 IQF 1": [
@@ -305,6 +289,47 @@ var visitorsData = {
 		]
 	}],
 	"CFS 650 TRUTRO SUR": [
+  {
+		name: "POLLO",
+		type: "line",
+    xValueFormatString: "DD/MMM HH:mm",
+		yValueFormatString: "0,0#%",
+		dataPoints: [
+			{ x: new Date("1 Jan 2015"), y: 22.000 },
+			{ x: new Date("1 Feb 2015"), y: 26.040 },
+			{ x: new Date("1 Mar 2015"), y: 25.840 },
+			{ x: new Date("1 Apr 2015"), y: 23.760 },
+			{ x: new Date("1 May 2015"), y: 28.800 },
+			{ x: new Date("1 Jun 2015"), y: 29.400 },
+			{ x: new Date("1 Jul 2015"), y: 33.440 },
+			{ x: new Date("1 Aug 2015"), y: 37.720 },
+			{ x: new Date("1 Sep 2015"), y: 35.200 },
+			{ x: new Date("1 Oct 2015"), y: 35.280 },
+			{ x: new Date("1 Nov 2015"), y: 31.160 },
+			{ x: new Date("1 Dec 2015"), y: 34.400 }
+		]
+	},
+  {
+		name: "PAVO",
+		type: "line",
+    xValueFormatString: "DD/MMM HH:mm",
+		yValueFormatString: "0,0#%",
+		dataPoints: [
+			{ x: new Date("1 Jan 2016"), y: 22.000 },
+			{ x: new Date("1 Feb 2016"), y: 26.040 },
+			{ x: new Date("1 Mar 2016"), y: 25.840 },
+			{ x: new Date("1 Apr 2016"), y: 23.760 },
+			{ x: new Date("1 May 2016"), y: 28.800 },
+			{ x: new Date("1 Jun 2016"), y: 29.400 },
+			{ x: new Date("1 Jul 2016"), y: 33.440 },
+			{ x: new Date("1 Aug 2016"), y: 37.720 },
+			{ x: new Date("1 Sep 2016"), y: 35.200 },
+			{ x: new Date("1 Oct 2016"), y: 35.280 },
+			{ x: new Date("1 Nov 2016"), y: 31.160 },
+			{ x: new Date("1 Dec 2016"), y: 34.400 }
+		]
+	}],
+	"METALQUIMIA": [
   {
 		name: "POLLO",
 		type: "line",

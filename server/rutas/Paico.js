@@ -65,7 +65,6 @@ router.post('/menu', async(req, res) => {
   var arr_of = [];
   var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}, (err,obje)=>{
     const arrOFS = obje.map(dat=> dat.N_OF)
-    console.log(obje)
     arr_of = arrOFS
   })
 
@@ -216,6 +215,7 @@ async function maqInyectora(maq){
 router.post('/saveiny', async(req, res) => {
   var data = req.body;
   var { OPERARIO } = req.body;
+  console.log(OPERARIO)
   var { COD_OF } = req.body;//OF
   var { CODIGO } = req.body;//PRODUCTO
   var { X_INYECTED } = req.body;
@@ -296,26 +296,25 @@ router.post('/saveiny', async(req, res) => {
     PROGRAMA: programa
   });
   const saveS = await schem.save();
-  var imgbtn = await maqInyectora(data.MAQUINA);
 
   var maquinaria = "";
-  if (codigo === "CFS 450 IQF 1") {
+  if (MAQUINA === "CFS 450 IQF 1") {
     maquinaria = "IQF";
     imgbtn = '/img/cfs450_1.png';
   }
-  if(codigo === "CFS 650 IQF 4"){
+  if(MAQUINA === "CFS 650 IQF 4"){
     maquinaria = "IQF";
     imgbtn = '/img/cfs450_1.png';
   }
-  if(codigo === "CFS 650 TRUTRO NORTE"){
+  if(MAQUINA === "CFS 650 TRUTRO NORTE"){
     maquinaria = "ISHIDA";
     imgbtn = '/img/cfs450_1.png';
   }
-  if(codigo === "CFS 650 TRUTRO SUR"){
+  if(MAQUINA === "CFS 650 TRUTRO SUR"){
     maquinaria = "ISHIDA";
     imgbtn = '/img/cfs450_1.png';
   }
-  if(codigo === "METALQUIMIA"){
+  if(MAQUINA === "METALQUIMIA"){
     maquinaria = "INYEC";
     imgbtn = '/img/INYEC.png';
   }
@@ -401,7 +400,9 @@ router.post('/saveiny', async(req, res) => {
  
   var ALERTA = true;
   var GRAFICO = true;
-  res.render('PAICO/menu', {OPERARIO, ALERTA, TEMPERATURA, COLOR_TEMP, ALERT_INYEC, COLOR_INY, imgbtn, queryOF, GRAFICO, GRAFTITLE: data.PRODUCTO, arrgrafpersonal, codigo: data.MAQUINA,arr_sel_show})
+  var ADMINISTRATIVO = false;
+ if(OPERARIO === "ADMINISTRATIVO")ADMINISTRATIVO=true
+  res.render('PAICO/menu', {OPERARIO, ALERTA,ADMINISTRATIVO, TEMPERATURA, COLOR_TEMP, ALERT_INYEC, COLOR_INY, imgbtn, queryOF, GRAFICO, GRAFTITLE: data.PRODUCTO, arrgrafpersonal, codigo: data.MAQUINA,arr_sel_show})
   //res.redirect('./menu')
 });
 
@@ -1017,12 +1018,15 @@ router.post('/cargardatos',async(req, res) => {
 //ruta que permite visualizar el menu de datos
 router.post('/datos',async(req, res) => {
   const {OPERARIO, MAQUINA} = req.body;
-
-  const of = await modInject.find({MAQUINA: "CFS 650 TRUTRO NORTE"})
+  const machines = ['CFS 450 IQF 1', 'CFS 650 IQF 4', 'CFS 650 TRUTRO NORTE', 'CFS 650 TRUTRO SUR', 'METALQUIMIA'];
+  var countMachn = [];
+  for (let asd = 0; asd < machines.length; asd++) {
+    const mans = machines[asd];
+    const l = await modInject.find({MAQUINA: mans}).countDocuments();
+    countMachn.push({MAQUINA: mans, COUNT: l})
+  }
   
-  const oof = await of.map(nar => nar.X_INYECTED)
-  //console.log(oof)
-  res.render('PAICO/datos',{OPERARIO})
+  res.render('PAICO/datos',{OPERARIO,countMachn})
 })
 
 async function loadOF(){
