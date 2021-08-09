@@ -11,7 +11,6 @@ const modOf = require('../DDBB/MODEL/ofs');
 const modUser = require('../DDBB/MODEL/users');
 moment().utc().format();
 
-
 // ruta principal aqui inicia la aplicacion
 router.get('/', async (req, res) => {
   const users = await modUser.find()
@@ -220,7 +219,7 @@ router.post('/saveiny', async(req, res) => {
   var { MAQUINA } = req.body;
   var { TEMP_MAQ } = req.body;
   var { SUPER_INYECT } = req.body;
-  console.log(SUPER_INYECT)
+  //console.log(SUPER_INYECT)
   var programa = req.body.PROGRAMA;
   var inyectParameter = 0.1; //porcentage de inyeccion
   var downinyected;
