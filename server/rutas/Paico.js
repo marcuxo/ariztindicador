@@ -215,9 +215,9 @@ async function maqInyectora(maq){
 router.post('/saveiny', async(req, res) => {
   var data = req.body;
   var { OPERARIO } = req.body;
-  console.log(OPERARIO)
   var { COD_OF } = req.body;//OF
   var { CODIGO } = req.body;//PRODUCTO
+  //console.log(CODIGO)
   var { X_INYECTED } = req.body;
   var { MAQUINA } = req.body;
   var { TEMP_MAQ } = req.body;
@@ -255,22 +255,25 @@ router.post('/saveiny', async(req, res) => {
   var upordown = 'NORMAL';
   var ALERT_INYEC = `% INYECCION DENTRO DEL RANGO (${X_INYECTED})`
   var COLOR_INY = 'alert-success';
+   if(downinyected == undefined || upinyected == undefined){
+    //--upordown = 'SIN REFERENCIA'
+    // request.post('https://botduty.herokuapp.com/--data--:'+data.MAQUINA+":"+CODIGO+":"+X_INYECTED);
+    var ALERT_INYEC = `PORCENTAJE DE INYECCION  ${X_INYECTED}%`
+    var COLOR_INY = 'alert-warning';
+  }
   if(X_INYECTED > upinyected){
     upordown = 'ALTO';
     //request.post('https://botduty.herokuapp.com/--data--:ALTO:'+X_INYECTED+":"+dbinyected+":"+data.MAQUINA+":"+data.PRODUCTO);
     var ALERT_INYEC = `% INYECCION FUERA DEL RANGO (ALTO) ${X_INYECTED}% Y DEBERIA ESTAR ENTRE ${downinyected}% Y ${upinyected}%`
     var COLOR_INY = 'alert-danger';
-  } else if(X_INYECTED < downinyected){
+  }
+  if(X_INYECTED < downinyected){
     upordown = 'BAJO'
     //--request.post('https://botduty.herokuapp.com/--data--:BAJO:'+X_INYECTED+":"+dbinyected+":"+data.MAQUINA+":"+data.PRODUCTO);
     var ALERT_INYEC = `% INYECCION FUERA DEL RANGO (BAJO) ${X_INYECTED}% Y DEBERIA ESTAR ENTRE ${downinyected}% Y ${upinyected}%`
     var COLOR_INY = 'alert-danger';
-  } else if(downinyected == undefined){
-    //--upordown = 'SIN REFERENCIA'
-    request.post('https://botduty.herokuapp.com/--data--:'+data.MAQUINA+":"+CODE_ART_NO_REF+":"+X_INYECTED);
-    var ALERT_INYEC = `% INYECCION FUERA DEL RANGO (BAJO) ${X_INYECTED}% Y DEBERIA ESTAR ENTRE ${downinyected}% Y ${upinyected}%`
-    var COLOR_INY = 'alert-danger';
   }
+ 
   
   //console.log(data)
   const schem = new modInject({
