@@ -299,18 +299,28 @@ router.post('/saveiny', async(req, res) => {
   var imgbtn = await maqInyectora(data.MAQUINA);
 
   var maquinaria = "";
-  if (MAQUINA === "CFS 450 IQF 1") {
+  if (codigo === "CFS 450 IQF 1") {
     maquinaria = "IQF";
+    imgbtn = '/img/cfs450_1.png';
   }
-  if(MAQUINA === "CFS 650 IQF 4"){
+  if(codigo === "CFS 650 IQF 4"){
     maquinaria = "IQF";
+    imgbtn = '/img/cfs450_1.png';
   }
-  if(MAQUINA === "CFS 650 TRUTRO NORTE"){
+  if(codigo === "CFS 650 TRUTRO NORTE"){
     maquinaria = "ISHIDA";
+    imgbtn = '/img/cfs450_1.png';
   }
-  if(MAQUINA === "CFS 650 TRUTRO SUR"){
+  if(codigo === "CFS 650 TRUTRO SUR"){
     maquinaria = "ISHIDA";
+    imgbtn = '/img/cfs450_1.png';
   }
+  if(codigo === "METALQUIMIA"){
+    maquinaria = "INYEC";
+    imgbtn = '/img/INYEC.png';
+  }
+  
+
   var _f = new Date();
   var dia = _f.getDate()-1;
   var yyyy = _f.getFullYear();
