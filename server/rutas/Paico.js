@@ -28,24 +28,29 @@ router.post('/menu', async(req, res) => {
   const OPERARIO = req.body.OPERARIO;
   const codigo = req.body.producto;
   console.log(codigo, OPERARIO);
-  var imgbtn = await maqInyectora(codigo);
+  var imgbtn = '';
   var ALERTA = false;
   var maquinaria = "";
 
   if (codigo === "CFS 450 IQF 1") {
     maquinaria = "IQF";
+    imgbtn = '/img/cfs450_1.png';
   }
   if(codigo === "CFS 650 IQF 4"){
     maquinaria = "IQF";
+    imgbtn = '/img/cfs450_1.png';
   }
   if(codigo === "CFS 650 TRUTRO NORTE"){
     maquinaria = "ISHIDA";
+    imgbtn = '/img/cfs450_1.png';
   }
   if(codigo === "CFS 650 TRUTRO SUR"){
     maquinaria = "ISHIDA";
+    imgbtn = '/img/cfs450_1.png';
   }
   if(codigo === "METALQUIMIA"){
     maquinaria = "METALQUIMIA";
+    imgbtn = '/img/INYEC.png';
   }
 
   var _f = new Date();
@@ -198,6 +203,9 @@ async function maqInyectora(maq){
   }
   if(themaq === '450'){
     imgbtn = '/img/cfs450_1.png'
+  }
+  if(themaq === 'METALQUIMIA'){
+    imgbtn = '/img/INYEC.png'
   }
   return imgbtn;
 }
