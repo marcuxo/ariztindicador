@@ -988,6 +988,27 @@ router.post('/xlsxpamco', async(req, res) => {
       var hora = formHora(hor_);
       return (yyyy+"-"+mm+"-"+dd+"T"+hora+":00.000Z");
     }
+    function getLine(line) {
+      // if (line === "CFS 450 IQF 1") {
+      //   isLine = "";
+      //   imgbtn = '/img/cfs450_1.png';
+      // }
+      // if (line === "CFS 650 IQF 4"){
+      //   isLine = "";
+      //   imgbtn = '/img/cfs450_1.png';
+      // }
+      if (line === "N"){
+        isLine = "CFS 650 TRUTRO NORTE";
+      }
+      if (line === "S"){
+        isLine = "CFS 650 TRUTRO SUR";
+      }
+      // if (line === "METALQUIMIA"){
+      //   isLine = "INYEC";
+      //   imgbtn = '/img/INYEC.png';
+      // }
+      return isLine;
+    }
     //console.log(lineas)
     //recorido de excel
     var arrdata = [];
@@ -1016,7 +1037,7 @@ router.post('/xlsxpamco', async(req, res) => {
         KG_IN: itm['kg Entrada'],
         KG_OUT: itm['Kg Salida'],
         PRODUCTO: itm['Codigo'],
-        MAQUINA: itm['LINEA'],
+        MAQUINA: getLine(itm['LINEA']),
         SUPERVISADO: itm['Supervisor'].toUpperCase(),
         OPERARIO: itm['Operador'].toUpperCase(),
         X_INYECTED: forcent,
