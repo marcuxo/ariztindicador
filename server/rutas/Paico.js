@@ -245,8 +245,8 @@ router.post('/saveiny', async(req, res) => {
       dbinyected = CODIGO
     }else{
       dbinyected = obje.POR_INY_OPTMO;
-      upinyected = (dbinyected*inyectParameter)+dbinyected;
-      downinyected = dbinyected-(dbinyected*inyectParameter)
+      upinyected = ((dbinyected*inyectParameter)+dbinyected).toFixed(2);
+      downinyected = (dbinyected-(dbinyected*inyectParameter)).toFixed(2);
     }
   });
   var CODE_ART_NO_REF
