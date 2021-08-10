@@ -951,7 +951,7 @@ router.post('/xlsxpamco', async(req, res) => {
     var libro = xlsx.read(eccel.data);
     var hoja = libro.SheetNames[0];
     var lineas = xlsx.utils.sheet_to_json(libro.Sheets[hoja]);
-
+    // console.log(lineas)
     function formHora(codestr) {
       var fecha = ((codestr - (25567 + 1)) * 86400 * 1000);
       var fecha1 = new Date(fecha);
@@ -961,8 +961,13 @@ router.post('/xlsxpamco', async(req, res) => {
       return spt;
     }
     function formFecha(codeFCA) {
-      var f1 = codeFCA.split('.')
-      var f2 = f1[2]+"-"+f1[1]+"-"+f1[0]
+      var f1 = codeFCA.split('.');
+      var a = f1[2];
+      var b = f1[1]<10?'0'+f1[1]:f1[1];
+      var c = f1[0]<10?'0'+f1[0]:f1[0];
+      
+      var f2 = a+"-"+b+"-"+c
+      //console.log(f2)
       return f2;
     }
     function formPorcent(codeX) {
@@ -974,20 +979,39 @@ router.post('/xlsxpamco', async(req, res) => {
       if(Number(por) < Number(optmo)) return "BAJO"
       if(Number(por) > Number(optmo)) return "ALTO"
     }
+    function formatExcelof(fecha_,hor_) {
+      var resultado = ((fecha_* 86400)-2209161600)*1000;
+      var fecha = new Date(resultado)//1600128000000
+      var dd = (fecha.getUTCDay()+1)<10?"0"+(fecha.getUTCDay()+1):(fecha.getUTCDay()+1);
+      var mm = (fecha.getMonth()+1)<10?"0"+(fecha.getMonth()+1):(fecha.getMonth()+1);
+      var yyyy = fecha.getFullYear();
+      var hora = formHora(hor_);
+      return (yyyy+"-"+mm+"-"+dd+"T"+hora+":00.000Z");
+    }
     //console.log(lineas)
     //recorido de excel
     var arrdata = [];
     for (let gr = 0; gr < lineas.length; gr++) {
       const itm = lineas[gr];
-      var fecha = await formFecha(itm['Fecha'])
+      var fecha = "";
+      var strfecha = new String(itm['Fecha'])
+      var fecha_ = strfecha.includes('.')
+      //console.log(fecha_)
       var hora = await formHora(itm['Hora'])
-      var fechora = fecha+"T"+hora+':00.000Z';
+      if(fecha_){
+        fecha = await formFecha(itm['Fecha'])
+        fecha = fecha+"T"+hora+':00.000Z';
+      }
+      else fecha = await formatExcelof(itm['Fecha'],itm['Hora'])
+      
+      
+      //var fechora = fecha+"T"+hora+':00.000Z';
       var forcent = formPorcent(itm['% de Inyeccion'])
       //console.log(fechora)
       await consultCPX(itm['Codigo'])
       const inser = await modInject({
         OF: itm['OF'],
-        FECHA: fechora,
+        FECHA: new Date(fecha),
         HORA: hora,
         KG_IN: itm['kg Entrada'],
         KG_OUT: itm['Kg Salida'],
@@ -1000,9 +1024,10 @@ router.post('/xlsxpamco', async(req, res) => {
         FILE: "TO-FILE-ONE",
         X_INYECTED_OPTIMO:xinyectOPTMOfolder
       });
+      //console.log(inser)
       const sert = inser.save()
     }
-    
+
     // FUNCIO QUE RECIVE EL PORCENTAGE DE INYECCION ACTUAL MAS EL CODIGO DEL PRODUCTO PARA BUSCAR EL CODIGO EN LA DB Y TRAER EL PORCENTAGE DE INYECCION OPTIMO
     // PARA CALCULAR EL PORCENTAGE ALTO Y BAJO Y COMPARARLO CON EL PORCENTAGE DE INYECCION ACTUAL
     var codigoFolder = ''
@@ -1021,11 +1046,10 @@ router.post('/xlsxpamco', async(req, res) => {
     };
 
     setTimeout(() => {
-      
       res.status(200).json({status:200, data: lineas.length})
-    }, 5000);
+    }, 2000);
   } catch (error) {
-    res.status(400).json({status:400, data: "El archivo no corresponde"})
+    res.status(200).json({status:400, data: "El archivo no corresponde"})
   }
   
 });
