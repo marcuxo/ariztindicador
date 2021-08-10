@@ -169,6 +169,7 @@ router.post('/inyeccion', async(req, res) => {
       cod_producto_ = obje[0].COD_ARTICULO
     }
   });
+  console.log(cod_producto_)
   
   await modprodto.find({COD_PRODUCTO: cod_producto_},(err, obje)=>{
     console.log(obje)
