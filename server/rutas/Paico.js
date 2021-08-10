@@ -160,17 +160,28 @@ router.post('/inyeccion', async(req, res) => {
   const programa = req.body.PROGRAMA;
   var cod_producto_ = ''
   var producto_ = ''
-  await modOf.find({N_OF: of},(err, obje)=>{
-   console.log(obje)
-    if(obje.length==0){
-      cod_producto_ = 'SIN REFERENCIA'
-    }
-    else{
-      cod_producto_ = obje[0].COD_ARTICULO
-    }
+  await modOf.find({N_OF: of},async(err, obje)=>{
+    console.log(obje)
+    cod_producto_ = obje[0].COD_ARTICULO;
+    await modprodto.find({COD_PRODUCTO: cod_producto_},(err, obje)=>{
+      console.log(obje)
+      if(obje.length == 0)producto_ = 'SIN REFERENCIA'
+      else(
+        producto_ = obje[0].PRODUCTO
+      )
+      setTimeout(() => {
+        res.render('PAICO/Inyeccion', { OPERARIO, MAQUINA:maquina, of, COD_PRODUCT: cod_producto_ , PRODUCTO: producto_, programa}) 
+      }, 3000);
+    })
+    // if(obje.length==0){
+    //   cod_producto_ = 'SIN REFERENCIA'
+    // }
+    // else{
+    //   cod_producto_ = obje[0].COD_ARTICULO
+    // }
   });
-  console.log(cod_producto_)
-  
+  //console.log("codigo:",cod_producto_)
+  return
   await modprodto.find({COD_PRODUCTO: cod_producto_},(err, obje)=>{
     console.log(obje)
     if(obje.length == 0)producto_ = 'SIN REFERENCIA'
