@@ -62,8 +62,8 @@ router.post('/menu', async(req, res) => {
   //var queryOF = await modOf.find({FECHA_PRODUCT: {$gte:leDate}}).sort({N_OF: -1}).limit(15);
   // var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}).sort({N_OF: -1});
   var arr_of = [];
-  var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}, (err,obje)=>{
-    const arrOFS = obje.map(dat=> dat.N_OF)
+  var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}, async (err,obje)=>{
+    const arrOFS = await obje.map(dat=> dat.N_OF)
     arr_of = arrOFS
   })
 
@@ -71,13 +71,13 @@ router.post('/menu', async(req, res) => {
   for (let frg = 0; frg < arr_of.length; frg++) {
     const itm4 = arr_of[frg];
     await modOf.findOne({N_OF:itm4},async(err,obje)=>{
-      await modprodto.findOne({COD_PRODUCTO: obje.COD_ARTICULO},(err,bjos)=>{
+      await modprodto.findOne({COD_PRODUCTO: obje.COD_ARTICULO},async(err,bjos)=>{
         //console.log(bjos)
         if(bjos == null)arr_data.push({PRODUCTO:obje.COD_ARTICULO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_ARTICULO})
-        else arr_data.push({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_ARTICULO})
+        else {await  arr_data.push({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_ARTICULO})}
         //arr_data.push({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_ARTICULO})
         //return ({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF})
-        return
+        //return
       })
     })
   }
@@ -86,10 +86,10 @@ router.post('/menu', async(req, res) => {
   for (let xcvd = 0; xcvd < arr_data.length; xcvd++) {
     const fdat = arr_data[xcvd];
     //console.log(fdat)
-    if(arr_select.length == 0)arr_select.push(fdat.COD_PRODUCT)
+    if(arr_select.length == 0) await arr_select.push(fdat.COD_PRODUCT)
     else{
       var esta = arr_select.includes(fdat.COD_PRODUCT)
-      if(!esta)arr_select.push(fdat.COD_PRODUCT)
+      if(!esta) await arr_select.push(fdat.COD_PRODUCT)
     }
   }
   //console.log(arr_select)
@@ -121,18 +121,20 @@ router.post('/menu', async(req, res) => {
         //console.log(sel_int)
         //console.log(sel_int.PRODUCTO)
         if(sel_fin === sel_int.COD_PRODUCT){
-          arrtemp1.push({OF:sel_int.N_OF,FECHA: await formatFecha(sel_int.FECHA)})
+         await arrtemp1.push({OF:sel_int.N_OF,FECHA: await formatFecha(sel_int.FECHA)})
         }
       }
       
-      arr_sel_show.push({PRODUCTO:getProducto(sel_fin),OF:arrtemp1})
-      arrtemp1 = [];
+      await arr_sel_show.push({PRODUCTO: await getProducto(sel_fin),OF:arrtemp1})
+      arrtemp1 = await [];
     }
+    await arr_sel_show
  //console.log(arr_sel_show)
  var ADMINISTRATIVO = false;
  if(OPERARIO === "ADMINISTRATIVO")ADMINISTRATIVO=true
-
- res.render('PAICO/menu', {OPERARIO, ALERTA, codigo, imgbtn, queryOF, maquinaria,arr_sel_show, ADMINISTRATIVO})
+  setTimeout(() => {
+    res.render('PAICO/menu', {OPERARIO, ALERTA, codigo, imgbtn, queryOF, maquinaria,arr_sel_show, ADMINISTRATIVO})    
+  }, 2000);
 });
 
 //--.- menu no en uso
