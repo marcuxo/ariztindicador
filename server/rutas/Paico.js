@@ -161,10 +161,10 @@ router.post('/inyeccion', async(req, res) => {
   var cod_producto_ = ''
   var producto_ = ''
   await modOf.find({N_OF: of},async(err, obje)=>{
-    console.log(obje)
+    //console.log(obje)
     cod_producto_ = obje[0].COD_ARTICULO;
     await modprodto.find({COD_PRODUCTO: cod_producto_},(err, obje)=>{
-      console.log(obje)
+      //console.log(obje)
       if(obje.length == 0)producto_ = 'SIN REFERENCIA'
       else(
         producto_ = obje[0].PRODUCTO
