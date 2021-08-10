@@ -135,7 +135,7 @@ router.post('/menu', async(req, res) => {
  res.render('PAICO/menu', {OPERARIO, ALERTA, codigo, imgbtn, queryOF, maquinaria,arr_sel_show, ADMINISTRATIVO})
 });
 
-//--.- menu
+//--.- menu no en uso
 router.get('/menu', async(req, res) => {
  
   //console.log(programa);
