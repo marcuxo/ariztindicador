@@ -945,83 +945,89 @@ router.post('/xlsxof', async(req, res) => {
 
 // ruta que recive el excel con los datos para ser procesado y cargado
 router.post('/xlsxpamco', async(req, res) => {
-  var OPERARIO = req.body.OPERARIO;
-  var eccel = req.files.ARCHIVO;
-  var libro = xlsx.read(eccel.data);
-  var hoja = libro.SheetNames[0];
-  var lineas = xlsx.utils.sheet_to_json(libro.Sheets[hoja]);
+  try {
+    var OPERARIO = req.body.OPERARIO;
+    var eccel = req.files.ARCHIVO;
+    var libro = xlsx.read(eccel.data);
+    var hoja = libro.SheetNames[0];
+    var lineas = xlsx.utils.sheet_to_json(libro.Sheets[hoja]);
 
-  function formHora(codestr) {
-    var fecha = ((codestr - (25567 + 1)) * 86400 * 1000);
-    var fecha1 = new Date(fecha);
-    var hora = fecha1.getUTCHours()<10?"0"+fecha1.getUTCHours():fecha1.getUTCHours();
-    var mm = fecha1.getUTCMinutes()<10?"0"+fecha1.getUTCMinutes():fecha1.getUTCMinutes();
-    var spt = hora+':'+mm
-    return spt;
-  }
-  function formFecha(codeFCA) {
-    var f1 = codeFCA.split('.')
-    var f2 = f1[2]+"-"+f1[1]+"-"+f1[0]
-    return f2;
-  }
-  function formPorcent(codeX) {
-    var c1 = codeX * 100
-    var c2 = Math.round(c1)
-    return c2;
-  }
-  function IsOnRange(por, optmo) {
-    if(Number(por) < Number(optmo)) return "BAJO"
-    if(Number(por) > Number(optmo)) return "ALTO"
-  }
-
-  //recorido de excel
-  var arrdata = [];
-  for (let gr = 0; gr < lineas.length; gr++) {
-    const itm = lineas[gr];
-    var fecha = await formFecha(itm['Fecha'])
-    var hora = await formHora(itm['Hora'])
-    var fechora = fecha+"T"+hora+':00.000Z';
-    var forcent = formPorcent(itm['% de Inyeccion'])
-    //console.log(fechora)
-    await consultCPX(itm['Codigo'])
-    const inser = await modInject({
-      OF: itm['OF'],
-      FECHA: fechora,
-      HORA: hora,
-      KG_IN: itm['kg Entrada'],
-      KG_OUT: itm['Kg Salida'],
-      PRODUCTO: itm['Codigo'],
-      MAQUINA: itm['LINEA'],
-      SUPERVISADO: itm['Supervisor'].toUpperCase(),
-      OPERARIO: itm['Operador'].toUpperCase(),
-      X_INYECTED: forcent,
-      RANGO: await IsOnRange(forcent,xinyectOPTMOfolder),
-      FILE: "TO-FILE-ONE",
-      X_INYECTED_OPTIMO:xinyectOPTMOfolder
-    });
-    const sert = inser.save()
-  }
-  
-  
-  
-  // FUNCIO QUE RECIVE EL PORCENTAGE DE INYECCION ACTUAL MAS EL CODIGO DEL PRODUCTO PARA BUSCAR EL CODIGO EN LA DB Y TRAER EL PORCENTAGE DE INYECCION OPTIMO
-  // PARA CALCULAR EL PORCENTAGE ALTO Y BAJO Y COMPARARLO CON EL PORCENTAGE DE INYECCION ACTUAL
-  var codigoFolder = ''
-  var productoFolder = ''
-  var xinyectOPTMOfolder = ''
-  async function consultCPX(cod_pro) {
-    if(cod_pro === codigoFolder){
-      return
-    } else {
-      var query = await modprodto.findOne({COD_PRODUCTO: cod_pro});
-      //console.log('con '+query.PRODUCTO, query.POR_INY_OPTMO)
-      codigoFolder = cod_pro;
-      productoFolder = query.PRODUCTO;
-      xinyectOPTMOfolder = query.POR_INY_OPTMO;
+    function formHora(codestr) {
+      var fecha = ((codestr - (25567 + 1)) * 86400 * 1000);
+      var fecha1 = new Date(fecha);
+      var hora = fecha1.getUTCHours()<10?"0"+fecha1.getUTCHours():fecha1.getUTCHours();
+      var mm = fecha1.getUTCMinutes()<10?"0"+fecha1.getUTCMinutes():fecha1.getUTCMinutes();
+      var spt = hora+':'+mm
+      return spt;
+    }
+    function formFecha(codeFCA) {
+      var f1 = codeFCA.split('.')
+      var f2 = f1[2]+"-"+f1[1]+"-"+f1[0]
+      return f2;
+    }
+    function formPorcent(codeX) {
+      var c1 = codeX * 100
+      var c2 = Math.round(c1)
+      return c2;
+    }
+    function IsOnRange(por, optmo) {
+      if(Number(por) < Number(optmo)) return "BAJO"
+      if(Number(por) > Number(optmo)) return "ALTO"
+    }
+    //console.log(lineas)
+    //recorido de excel
+    var arrdata = [];
+    for (let gr = 0; gr < lineas.length; gr++) {
+      const itm = lineas[gr];
+      var fecha = await formFecha(itm['Fecha'])
+      var hora = await formHora(itm['Hora'])
+      var fechora = fecha+"T"+hora+':00.000Z';
+      var forcent = formPorcent(itm['% de Inyeccion'])
+      //console.log(fechora)
+      await consultCPX(itm['Codigo'])
+      const inser = await modInject({
+        OF: itm['OF'],
+        FECHA: fechora,
+        HORA: hora,
+        KG_IN: itm['kg Entrada'],
+        KG_OUT: itm['Kg Salida'],
+        PRODUCTO: itm['Codigo'],
+        MAQUINA: itm['LINEA'],
+        SUPERVISADO: itm['Supervisor'].toUpperCase(),
+        OPERARIO: itm['Operador'].toUpperCase(),
+        X_INYECTED: forcent,
+        RANGO: await IsOnRange(forcent,xinyectOPTMOfolder),
+        FILE: "TO-FILE-ONE",
+        X_INYECTED_OPTIMO:xinyectOPTMOfolder
+      });
+      const sert = inser.save()
+    }
+    
+    // FUNCIO QUE RECIVE EL PORCENTAGE DE INYECCION ACTUAL MAS EL CODIGO DEL PRODUCTO PARA BUSCAR EL CODIGO EN LA DB Y TRAER EL PORCENTAGE DE INYECCION OPTIMO
+    // PARA CALCULAR EL PORCENTAGE ALTO Y BAJO Y COMPARARLO CON EL PORCENTAGE DE INYECCION ACTUAL
+    var codigoFolder = ''
+    var productoFolder = ''
+    var xinyectOPTMOfolder = ''
+    async function consultCPX(cod_pro) {
+      if(cod_pro === codigoFolder){
+        return
+      } else {
+        var query = await modprodto.findOne({COD_PRODUCTO: cod_pro});
+        //console.log('con '+query.PRODUCTO, query.POR_INY_OPTMO)
+        codigoFolder = cod_pro;
+        productoFolder = query.PRODUCTO;
+        xinyectOPTMOfolder = query.POR_INY_OPTMO;
+      };
     };
-  };
 
-  res.status(200).json({status:200, data: lineas.length})
+    setTimeout(() => {
+      
+      res.status(200).json({status:200, data: lineas.length})
+    }, 5000);
+  } catch (error) {
+    res.status(400).json({status:400, data: "El archivo no corresponde"})
+  }
+  
 });
 
 // ruta que permite subri el pamco via excel

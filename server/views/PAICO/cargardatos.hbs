@@ -7,7 +7,7 @@
       <form enctype="multipart/form-data" onsubmit="uploadXfile(event)">
         <input type="file" name="file" id="file" onchange="valfile()" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
         <label for="file" id="namefile">Seleccionar Archivo de PAMCO <i class="fas fa-file-upload" ></i></label><br><br>
-        <input type="submit" class="btn btn-success btn-sm py-2 w-50" value="CARGAR">
+        <button class="btn btn-success btn-sm py-2 w-50" id="btnUpload">CARGAR</button>
       </form>
     </div>
   </div>
@@ -66,26 +66,41 @@
   var url = '/paico/xlsxpamco';
   var archivo = document.querySelector('input[type="file"]');
   var TKN = document.getElementById('TOKEN');
+  var btn_ = document.getElementById('btnUpload')
+  
+  nmfile.innerHTML = `Cargar Archivo de PAMCO <i class="fas fa-file-upload"></i>`
   function uploadXfile(e) {
     e.preventDefault()
+    
     if(lefi.value == '')return swal('Alerta','Debes Seleccionar un archivo!!','warning')
-    const formdata = new FormData();
-    formdata.append('ARCHIVO', archivo.files[0])
-    //formdata.append('TOKEN', TKN.value)
-    fetch(url, {
-      method: 'POST',
-      body: formdata
-    })
-    .then(res => res.json())
-    .then(resp => {
-      console.log(resp)
-      if(resp.status==200) {
-        swal('Great!!','Se ingresaron 41 lineas de datos','success')
-        nmfile.innerHTML = `<i class="fas fa-file-upload"></i> SELECCIONAR ARCHIVO`
-        lefi.value = ''
-      } else {
-        swal('Alerta!!','los datos no fueron ingresados en la base de datos.','warning')
-      }
-    })
+    else{
+      btn_.disabled = true
+      btn_.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`
+      const formdata = new FormData();
+      formdata.append('ARCHIVO', archivo.files[0])
+      //formdata.append('TOKEN', TKN.value)
+      fetch(url, {
+        method: 'POST',
+        body: formdata
+      })
+      .then(res => res.json())
+      .then(resp => {
+        console.log(resp)
+        if(resp.status==200) {
+          swal('Great!!','Se ingresaron 41 lineas de datos','success')
+          nmfile.innerHTML = `<i class="fas fa-file-upload"></i> SELECCIONAR ARCHIVO`
+          btn_.disabled = false
+          btn_.innerHTML = `CARGAR`
+          lefi.value = ''
+        } else {
+          swal('Alerta!!','los datos no fueron ingresados en la base de datos.','warning');
+          nmfile.innerHTML = `<i class="fas fa-file-upload"></i> SELECCIONAR ARCHIVO`
+          btn_.disabled = false
+          btn_.innerHTML = `CARGAR`
+          lefi.value = ''
+        }
+      })
+    }
+    
   }
 </script>
