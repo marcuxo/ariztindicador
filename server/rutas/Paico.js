@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
   res.render('login/formulario1',{user})
 });
 
-//1.- menu **EN DESARROLLO MODULO DE NUEVA SELECCION DE OF POR PRODUCTO///en observaci0on el metodo de menu
+//1.- menu **EN DESARROLLO MODULO DE NUEVA SELECCION DE OF POR PRODUCTO// ruta en observacion 
 router.post('/menu', async(req, res) => {
   const OPERARIO = req.body.OPERARIO;
   const codigo = req.body.producto;
