@@ -19,12 +19,12 @@
     <div class="col centro text-center mainmenu">
       <div class="row py-3">
        <div class="col-12 col-md-6">
-          <label class="lead">{{codigo}}</label><br>
+          <label class="lead">{{MAQUINA}}</label><br>
         <input type="image" name="img_maquina" class="" src="{{imgbtn}}" height="200px" style="border: 2px black solid;border-radius: 10px; background-color: rgba(0, 255, 255, 0.22);"> <br>
         
         <label for="img_maquina">INGRESAR CONTROL DE INYECCION</label>
         <input type="hidden" name="OPERARIO" value="{{OPERARIO}}">
-        <input type="hidden" name="MAQUINA" id="MAQUINA" value="{{codigo}}">
+        <input type="hidden" name="MAQUINA" id="MAQUINA" value="{{MAQUINA}}">
         <input type="hidden" name="PROGRAMA" value="{{programa}}"> 
         {{!-- <select name="N_OF" id="N_OF" class="form-control form-control-sm rounded-pill">
           <option class="text-monospace" value="000">Seleccione una OF</option>
@@ -38,7 +38,7 @@
         </select> --}}
         <select name="N_OF1" id="N_OF1" class="form-control form-control-sm rounded-pill">
           <option class="text-monospace" value="000">Seleccione una OF</option>
-          {{#each arr_sel_show}}
+          {{#each arr_menu_}}
             <optgroup label="{{PRODUCTO}}">
               {{#each OF}}
                 <option class="text-monospace" value="{{OF}}">Of:{{OF}} Fecha:{{FECHA}}</option>
@@ -79,7 +79,7 @@
               <form action="/paico/cargardatos" method="post">
                 <button class="btn btn-success btn-sm " onclick=""><i class="fas fa-file-upload fa-3x"></i></button><br>
                 <input type="hidden" name="OPERARIO" value="{{OPERARIO}}">
-                <input type="hidden" name="MAQUINA" id="MAQUINA" value="{{codigo}}">
+                <input type="hidden" name="MAQUINA" id="MAQUINA" value="{{MAQUINA}}">
                 <small for="">CARGAR DATOS</small>
               </form>
             </div>
@@ -119,15 +119,7 @@
           </button>
         </div>
     {{/if}}
-      {{!-- <script>
-        setTimeout(() => {
-          alerta1.classList.remove('show');
-          alerta2.classList.remove('show');
-          alerta3.classList.remove('show');
-        }, 5000);
-      </script> --}}
 
-          
       </div>
 </div>
       <div class="container fixed-top ">
@@ -259,13 +251,12 @@
           }, 10000);
         }
           
+        {{!-- var url = '/paico/getmenulinea'
+        fetch(url+'/{{MAQUINA}}',{
+          method: 'GET'
+        })
+        .then(res=>res.json())
+        .then(rest=>{
+          console.log(rest)
+        }) --}}
       </script>
-
-      {{!-- {{#each arr_sel_show}}
-        <script>
-          console.log("{{PRODUCTO}}")
-          {{#each OF}}
-            console.log("-Of:{{OF}} -Fecha:{{FECHA}}")
-          {{/each}}
-        </script>
-      {{/each}} --}}

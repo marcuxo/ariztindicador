@@ -25,33 +25,46 @@ router.get('/', async (req, res) => {
 //1.- menu **EN DESARROLLO MODULO DE NUEVA SELECCION DE OF POR PRODUCTO// ruta en observacion 
 router.post('/menu', async(req, res) => {
   const OPERARIO = req.body.OPERARIO;
-  const codigo = req.body.producto;
+  const MAQUINA = req.body.producto;
   //console.log(codigo, OPERARIO);
   var imgbtn = '';
   var ALERTA = false;
   var maquinaria = "";
+  
 
-  if (codigo === "CFS 450 IQF 1") {
+  if (MAQUINA === "CFS 450 IQF 1") {
     maquinaria = "IQF";
     imgbtn = '/img/cfs450_1.png';
   }
-  if(codigo === "CFS 650 IQF 4"){
+  if(MAQUINA === "CFS 650 IQF 4"){
     maquinaria = "IQF";
     imgbtn = '/img/cfs450_1.png';
   }
-  if(codigo === "CFS 650 TRUTRO NORTE"){
+  if(MAQUINA === "CFS 650 TRUTRO NORTE"){
     maquinaria = "ISHIDA";
     imgbtn = '/img/cfs450_1.png';
   }
-  if(codigo === "CFS 650 TRUTRO SUR"){
+  if(MAQUINA === "CFS 650 TRUTRO SUR"){
     maquinaria = "ISHIDA";
     imgbtn = '/img/cfs450_1.png';
   }
-  if(codigo === "METALQUIMIA"){
+  if(MAQUINA === "METALQUIMIA"){
     maquinaria = "INYEC";
     imgbtn = '/img/INYEC.png';
   }
+//maquinaria
+  var arr_menu_ = await getMenu(maquinaria);
 
+ var ADMINISTRATIVO = false;
+ if(OPERARIO === "ADMINISTRATIVO")ADMINISTRATIVO=true
+  setTimeout(() => {
+    res.render('PAICO/menu', {OPERARIO, ALERTA, MAQUINA, imgbtn, maquinaria,arr_menu_, ADMINISTRATIVO})    
+  }, 2000);
+});
+
+// funcion que devuelve el menu por ofs
+async function getMenu(maquinaria) {
+  console.log(maquinaria)
   var _f = new Date();
   var dia = _f.getDate()-1;//dias a tras para generar busqueda de OFs
   var yyyy = _f.getFullYear();
@@ -129,13 +142,9 @@ router.post('/menu', async(req, res) => {
       arrtemp1 = await [];
     }
     await arr_sel_show
- //console.log(arr_sel_show)
- var ADMINISTRATIVO = false;
- if(OPERARIO === "ADMINISTRATIVO")ADMINISTRATIVO=true
-  setTimeout(() => {
-    res.render('PAICO/menu', {OPERARIO, ALERTA, codigo, imgbtn, queryOF, maquinaria,arr_sel_show, ADMINISTRATIVO})    
-  }, 2000);
-});
+    //console.log(arr_sel_show)
+    return await arr_sel_show;
+}
 
 //--.- menu no en uso
 router.get('/menu', async(req, res) => {
@@ -335,91 +344,23 @@ router.post('/saveiny', async(req, res) => {
     imgbtn = '/img/INYEC.png';
   }
   
+  //maquinaria
+  var arr_menu_ = await getMenu(maquinaria);
 
-  var _f = new Date();
-  var dia = _f.getDate()-1;
-  var yyyy = _f.getFullYear();
-  var mm2 = _f.getMonth()+1;
-  var mm = mm2<10?"0"+mm2:mm2;
-  var dd = dia<10?"0"+dia:dia;
-  var leDate = `${yyyy}-${mm}-${dd}T04:00:00.000+00:00`
-  //console.log(leDate);
-  //var queryOF = await modOf.find({FECHA_PRODUCT: {$gte:leDate}}).sort({N_OF: -1}).limit(15);
-  var arr_of = [];
-  var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}, (err,obje)=>{
-    const arrOFS = obje.map(dat=> dat.N_OF)
-    arr_of = arrOFS
-  })
-
-  var arr_data = [];
-  for (let frg = 0; frg < arr_of.length; frg++) {
-    const itm4 = arr_of[frg];
-    await modOf.findOne({N_OF:itm4},async(err,obje)=>{
-      await modprodto.findOne({COD_PRODUCTO: obje.COD_ARTICULO},(err,bjos)=>{
-        //console.log(bjos)
-        if(bjos == null)arr_data.push({PRODUCTO:obje.COD_ARTICULO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_ARTICULO})
-        else arr_data.push({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_ARTICULO})
-        //arr_data.push({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_ARTICULO})
-        //return ({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF})
-        return
-      })
-    })
-  }
-  
-  var arr_select = [];
-  for (let xcvd = 0; xcvd < arr_data.length; xcvd++) {
-    const fdat = arr_data[xcvd];
-    //console.log(fdat)
-    if(arr_select.length == 0)arr_select.push(fdat.COD_PRODUCT)
-    else{
-      var esta = arr_select.includes(fdat.COD_PRODUCT)
-      if(!esta)arr_select.push(fdat.COD_PRODUCT)
-    }
-  }
-  //console.log(arr_select)
-
-  function formatFecha(fech) {
-    var a = new Date(fech);
-    var dd = a.getDate()<10?"0"+a.getDate():a.getDate();
-    var mm = (a.getMonth()+1)<10?"0"+(a.getMonth()+1):(a.getMonth()+1);
-    return dd+"/"+mm
-  }
-  function getProducto(cod_) {
-    var o = true;
-    var cont = 0;
-    while (o) {
-      if(arr_data[cont].COD_PRODUCT == cod_){
-        o = false
-        return arr_data[cont].PRODUCTO
-      }
-      cont = cont+1
-    }
-  }
-  var arr_sel_show = [];
-  var arrtemp1 = [];
-    for (let ret = 0; ret < arr_select.length; ret++) {
-      const sel_fin = arr_select[ret];
-      var tempProduct = '';
-      for (let esdf = 0; esdf < arr_data.length; esdf++) {
-        const sel_int = arr_data[esdf];
-        //console.log(sel_int)
-        //console.log(sel_int.PRODUCTO)
-        if(sel_fin === sel_int.COD_PRODUCT){
-          arrtemp1.push({OF:sel_int.N_OF,FECHA: await formatFecha(sel_int.FECHA)})
-        }
-      }
-      
-      arr_sel_show.push({PRODUCTO:getProducto(sel_fin),OF:arrtemp1})
-      arrtemp1 = [];
-    }
-  var arrgrafpersonal = await grafPesonal(data.CODIGO, COD_OF);
- 
   var ALERTA = true;
   var GRAFICO = true;
   var ADMINISTRATIVO = false;
- if(OPERARIO === "ADMINISTRATIVO")ADMINISTRATIVO=true
-  res.render('PAICO/menu', {OPERARIO, ALERTA,ADMINISTRATIVO, TEMPERATURA, COLOR_TEMP, ALERT_INYEC, COLOR_INY, imgbtn, queryOF, GRAFICO, GRAFTITLE: data.PRODUCTO, arrgrafpersonal, codigo: data.MAQUINA,arr_sel_show})
-  //res.redirect('./menu')
+  var ADMINISTRATIVO = false;
+  if(OPERARIO === "ADMINISTRATIVO")ADMINISTRATIVO=true
+  setTimeout(() => {
+    res.render('PAICO/menu', {OPERARIO, ALERTA, MAQUINA, imgbtn, maquinaria,arr_menu_, ADMINISTRATIVO, TEMPERATURA, COLOR_TEMP, ALERT_INYEC, COLOR_INY})    
+  }, 2000);
+ 
+  
+  
+//  if(OPERARIO === "ADMINISTRATIVO")ADMINISTRATIVO=true
+//   res.render('PAICO/menu', {OPERARIO, ALERTA,ADMINISTRATIVO, TEMPERATURA, COLOR_TEMP, ALERT_INYEC, COLOR_INY, imgbtn, queryOF, GRAFICO, GRAFTITLE: data.PRODUCTO, arrgrafpersonal, codigo: data.MAQUINA,arr_sel_show})
+//   //res.redirect('./menu')
 });
 
 // ruta que busca los datos en la DDBB y los procesa para mostrarlos.
@@ -1155,113 +1096,140 @@ async function grafPesonal(producto, _of) {
   return data_grafica;
 }
 
-// //funcion temporal para agregar los datos de los operadores de la plataforma
-// async function addData_() {
-//   var arr_save = [
-//     {NOMBRE: 'OLGUIN OSCAR', RUT: '13558567-K',MAQUINA: 'IQF', BOSS_LINE: 'GUILLERMO NARVAEZ', STADO: true},
-//     {NOMBRE: 'TORO IAIAS', RUT: '20464275-3',MAQUINA: 'IQF', BOSS_LINE: 'GUILLERMO NARVAEZ', STADO: true},
-//     {NOMBRE: 'NARANJO ALEJANDRO', RUT: '13771548-1',MAQUINA: 'IQF', BOSS_LINE: 'GUILLERMO NARVAEZ', STADO: true},
-//     {NOMBRE: 'ROJAS MAURICIO', RUT: '10374175-0',MAQUINA: 'IQF', BOSS_LINE: 'GUILLERMO NARVAEZ', STADO: true},
-//     {NOMBRE: 'HUERTA PATRICIO', RUT: '18960237-5',MAQUINA: 'METALQUIMIA', BOSS_LINE: 'GUILLERMO NARVAEZ', STADO: true},
-//     {NOMBRE: 'IBARRA CRISTOPHER', RUT: '15533225-5',MAQUINA: 'METALQUIMIA', BOSS_LINE: 'GUILLERMO NARVAEZ', STADO: true},
-//     {NOMBRE: 'LUIS RUBIO', RUT: '15964744-7',MAQUINA: 'ISHIDA', BOSS_LINE: 'OCTAVIO MUNOZ', STADO: true},
-//     {NOMBRE: 'JONATHAN VARGAS', RUT: '17081291-3',MAQUINA: 'ISHIDA', BOSS_LINE: 'OCTAVIO MUNOZ', STADO: true},
-//     {NOMBRE: 'CARLOS LAZO', RUT: '11628677-7',MAQUINA: 'ISHIDA', BOSS_LINE: 'OCTAVIO MUNOZ', STADO: true},
-//     {NOMBRE: 'LUIS FARIAS', RUT: '13771600-3',MAQUINA: 'ISHIDA', BOSS_LINE: 'OCTAVIO MUNOZ', STADO: true},
-//     {NOMBRE: 'JAVIER GALLEGUILLOS', RUT: '19411323-4',MAQUINA: 'ISHIDA', BOSS_LINE: 'OCTAVIO MUNOZ', STADO: true},
-//     {NOMBRE: 'JEUDY DOMINIQUE', RUT: '25970249-6',MAQUINA: 'ISHIDA', BOSS_LINE: 'OCTAVIO MUNOZ', STADO: true},
-//     {NOMBRE: 'RODRIGUEZ MIGUE', RUT: '26320174-4',MAQUINA: 'ISHIDA', BOSS_LINE: 'OCTAVIO MUNOZ', STADO: true},
-//   ]
-//   await modUser.insertMany(arr_save)
-// }
-// addData_()
+/**
+ * 
+ * api
+ * 
+ */
+router.post('/getusers',async(req, res)=>{
+  try {
+    const users = await modUser.find()
+    const user = await users.map(w=>{
+      const {NOMBRE, RUT}=w
+      return {NOMBRE, RUT};
+    })
+    res.status(200).json({status:200, data:user})
+  } catch (error) {
+    res.status(200).json({status:400, data:"error en los datos"})
+  }
+})
 
-module.exports = router;
-
-
-// //1.- menu **EN DESARROLLO MODULO DE NUEVA SELECCION DE OF POR PRODUCTO
-// router.post('/menu', async(req, res) => {
-//   const OPERARIO = req.body.OPERARIO.toUpperCase();
-//   const codigo = req.body.producto;
-//    //console.log(codigo, OPERARIO);
-//   var imgbtn = await maqInyectora(codigo);
-//   var ALERTA = false;
-//   var maquinaria = "";
-
-//   if (codigo === "CFS 450 IQF 1") {
-//     maquinaria = "IQF";
-//   }
-//   if(codigo === "CFS 650 IQF 4"){
-//     maquinaria = "IQF";
-//   }
-//   if(codigo === "CFS 650 TRUTRO NORTE"){
-//     maquinaria = "ISHIDA";
-//   }
-//   if(codigo === "CFS 650 TRUTRO SUR"){
-//     maquinaria = "ISHIDA";
-//   }
-//   if(codigo === "METALQUIMIA"){
-//     maquinaria = "METALQUIMIA";
-//   }
-
-//   var _f = new Date();
-//   var dia = _f.getDate()-2;//dias a tras para generar busqueda de OFs
-//   var yyyy = _f.getFullYear();
-//   var mm2 = _f.getMonth()+1;
-//   var mm = mm2<10?"0"+mm2:mm2;
-//   var dd = dia<10?"0"+dia:dia;
-//   var leDate = `${yyyy}-${mm}-${dd}T00:00:00.000+00:00`
-//   //var queryOF = await modOf.find({FECHA_PRODUCT: {$gte:leDate}}).sort({N_OF: -1}).limit(15);
-//   // var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}).sort({N_OF: -1});
-//   var arr_of = [];
-//   var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}, (err,obje)=>{
-//     const arrOFS = obje.map(dat=> dat.N_OF)
-//     arr_of = arrOFS
-//   })
-
-//   var arr_data = [];
-//   for (let frg = 0; frg < arr_of.length; frg++) {
-//     const itm4 = arr_of[frg];
-//     await modOf.findOne({N_OF:itm4},async(err,obje)=>{
-//       await modprodto.findOne({COD_PRODUCTO: obje.COD_ARTICULO},(err,bjos)=>{
-//         //console.log(bjos)
-//         arr_data.push({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_PRODUCTO})
-//         //return ({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF})
-//         return
-//       })
-//     })
-//   }
+router.get('/getmenulinea/:machine',async(req, res)=>{
+  try {
+    var {machine} = req.params
+    console.log('=>',machine)
+    if (machine === "CFS 450 IQF 1") {
+      maquinaria = "IQF";
+      imgbtn = '/img/cfs450_1.png';
+    }
+    if(machine === "CFS 650 IQF 4"){
+      maquinaria = "IQF";
+      imgbtn = '/img/cfs450_1.png';
+    }
+    if(machine === "CFS 650 TRUTRO NORTE"){
+      maquinaria = "ISHIDA";
+      imgbtn = '/img/cfs450_1.png';
+    }
+    if(machine === "CFS 650 TRUTRO SUR"){
+      maquinaria = "ISHIDA";
+      imgbtn = '/img/cfs450_1.png';
+    }
+    if(machine === "METALQUIMIA"){
+      maquinaria = "INYEC";
+      imgbtn = '/img/INYEC.png';
+    }
+    var _f = new Date();
+    var dia = _f.getDate()-1;//dias a tras para generar busqueda de OFs
+    var yyyy = _f.getFullYear();
+    var mm2 = _f.getMonth()+1;
+    var mm = mm2<10?"0"+mm2:mm2;
+    var dd = dia<10?"0"+dia:dia;
+    var leDate = `${yyyy}-${mm}-${dd}T00:00:00.000+00:00`
+    //var queryOF = await modOf.find({FECHA_PRODUCT: {$gte:leDate}}).sort({N_OF: -1}).limit(15);
+    // var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}).sort({N_OF: -1});
+    var arr_of = [];
+    var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}, async (err,obje)=>{
+      const arrOFS = await obje.map(dat=> dat.N_OF)
+      arr_of = arrOFS
+    })
   
-//   var arr_select = [];
-//   for (let xcvd = 0; xcvd < arr_data.length; xcvd++) {
-//     const fdat = arr_data[xcvd];
-//     if(arr_select.length == 0)arr_select.push(fdat.PRODUCTO)
-//     else{
-//       var esta = arr_select.includes(fdat.PRODUCTO)
-//       if(!esta)arr_select.push(fdat.PRODUCTO)
-//     }
-//   }
-//   function formatFecha(fech) {
-//     var a = new Date(fech);
-//     var dd = a.getDate()<10?"0"+a.getDate():a.getDate();
-//     var mm = (a.getMonth()+1)<10?"0"+(a.getMonth()+1):(a.getMonth()+1);
-//     return dd+"/"+mm
-//   }
-//   var arr_sel_show = [];
-//   var arrtemp1 = [];
-//     for (let ret = 0; ret < arr_select.length; ret++) {
-//       const sel_fin = arr_select[ret];
-//       for (let esdf = 0; esdf < arr_data.length; esdf++) {
-//         const sel_int = arr_data[esdf];
-//         //console.log(sel_int)
-//         if(sel_fin === sel_int.PRODUCTO){
-//           arrtemp1.push({OF:sel_int.N_OF,FECHA: await formatFecha(sel_int.FECHA)})
-//         }
-//       }
-//       arr_sel_show.push({PRODUCTO:sel_fin,OF:arrtemp1})
-//       arrtemp1 = [];
-//     }
-// // console.log(arr_sel_show)
+    var arr_data = [];
+    for (let frg = 0; frg < arr_of.length; frg++) {
+      const itm4 = arr_of[frg];
+      await modOf.findOne({N_OF:itm4},async(err,obje)=>{
+        await modprodto.findOne({COD_PRODUCTO: obje.COD_ARTICULO},async(err,bjos)=>{
+          //console.log(bjos)
+          if(bjos == null)arr_data.push({PRODUCTO:obje.COD_ARTICULO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_ARTICULO})
+          else {await  arr_data.push({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_ARTICULO})}
+          //arr_data.push({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF, COD_PRODUCT:obje.COD_ARTICULO})
+          //return ({PRODUCTO:bjos.PRODUCTO,N_OF:obje.N_OF,LINEA:obje.LINEA,FECHA:obje.FECHA_OF})
+          //return
+        })
+      })
+    }
+    
+    var arr_select = [];
+    for (let xcvd = 0; xcvd < arr_data.length; xcvd++) {
+      const fdat = arr_data[xcvd];
+      //console.log(fdat)
+      if(arr_select.length == 0) await arr_select.push(fdat.COD_PRODUCT)
+      else{
+        var esta = arr_select.includes(fdat.COD_PRODUCT)
+        if(!esta) await arr_select.push(fdat.COD_PRODUCT)
+      }
+    }
+    //console.log(arr_select)
+  
+    function formatFecha(fech) {
+      var a = new Date(fech);
+      var dd = a.getDate()<10?"0"+a.getDate():a.getDate();
+      var mm = (a.getMonth()+1)<10?"0"+(a.getMonth()+1):(a.getMonth()+1);
+      return dd+"/"+mm
+    }
+    async function getProducto(cod_) {
+      var o = true;
+      var cont = 0;
+      while (o) {
+        if(arr_data[cont].COD_PRODUCT === cod_){
+          o = false
+          return await arr_data[cont].PRODUCTO
+        }
+        cont = cont+1
+      }
+    }
+    var arr_sel_show = [];
+    var arrtemp1 = [];
+      for (let ret = 0; ret < arr_select.length; ret++) {
+        const sel_fin = arr_select[ret];
+        var tempProduct = '';
+        for (let esdf = 0; esdf < arr_data.length; esdf++) {
+          const sel_int = arr_data[esdf];
+          //console.log(sel_int)
+          //console.log(sel_int.PRODUCTO)
+          if(sel_fin === sel_int.COD_PRODUCT){
+           await arrtemp1.push({OF:sel_int.N_OF,FECHA: await formatFecha(sel_int.FECHA)})
+          }
+        }
+        
+        await arr_sel_show.push({PRODUCTO: await getProducto(sel_fin),OF:arrtemp1})
+        arrtemp1 = await [];
+      }
+      await arr_sel_show
+      //console.log(arr_sel_show)
+      ;
+    
+    res.status(200).json({status:200, data: await arr_sel_show})
+  } catch (error) {
+    res.status(200).json({status:400, data:'error en los datos'})
+  }
+})
 
-//  res.render('PAICO/menu', {OPERARIO, ALERTA, codigo, imgbtn, queryOF, maquinaria,arr_sel_show})
-// });
+router.post('/blanc',async(req, res)=>{
+  try {
+    
+    res.status(200).json({status:200, data:[]})
+  } catch (error) {
+    res.status(200).json({status:400, data:[]})
+  }
+})
+module.exports = router;

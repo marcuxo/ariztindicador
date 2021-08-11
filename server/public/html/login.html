@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CONTROL DE INYECCION</title>
+  <link rel="icon" type="image/png" href="">
+  <link rel="stylesheet" href="/css/bootstrap.css">
+  <script src="https://kit.fontawesome.com/2d5d9448ef.js" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script type="text/javascript" src="/js/jquery-1.11.1.js"></script>
+  <script type="text/javascript" src="/js/stockChart.js"></script>
+  <script type="text/javascript" src="/js/canvasjs.js"></script>
+  <script src="/js/bootstrap.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <style>
+    .btn-menup {
+      width: fit-content;
+      height: fit-content;
+    }
+    .menuflotante {
+      cursor: pointer;
+    }
+    body {
+      background-image: url(/img/fondo.jpg);
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-attachment: fixed;
+      background-size: cover;
+      height: 100%;
+    }
+      .mainmenu {
+    border-radius: 20px;
+    background-color: rgba(247, 250, 249, 0.391);
+    box-shadow: 5px 5px 5px rgb(0, 0, 0, .5);
+  }
+  </style>
+</head>
+<body>
+  <style>
+    .full {
+      height: 100vh;
+    }
+    .centro {
+      margin: auto auto;
+    }
+    .contenedor {
+      width: 50vw;
+    }
+    img {
+      padding-top: 25%;
+      display: block;
+      margin: auto;
+    }
+  
+  </style>
+  <div class="container">
+      <form action="/paico/menu" method="post" onsubmit="checkForm(event)">
+    <div class="row full">
+      <div class="col-12 col-md-8 centro">
+       <div class="row">
+          <div class="col-12 col-md-6">
+            <img src="/img/logo_ariztia.png" alt="" class="img-fluid">
+          </div>
+          <div class="col-12 col-md-6 py-5 mainmenu">
+            <label class="text-secondary">SELECCIONE USUARIO </label>
+            <select name="OPERARIO" id="OPERARIO" class="form-control form-control-sm rounded-pill w-100" onchange="savecode()" required>
+              <option class="text-monospace" value="000">SELECCIONE USUARIO</option>
+                <!-- <option class="text-monospace" value="{{NOMBRE}}">{{RUT}}</option> -->
+              
+            </select>
+            <label class="text-secondary mt-3">SELECCIONE LINEA</label>
+            <select name="producto" id="producto" class="form-control form-control-sm rounded-pill w-100" onchange="savecode()" required>
+              <option class="text-monospace" value="000">SELECCIONE LINEA</option>
+              <option class="text-monospace" >CFS 450 IQF 1</option>
+              <option class="text-monospace" >CFS 650 IQF 4</option>
+              <option class="text-monospace" >CFS 650 TRUTRO NORTE</option>
+              <option class="text-monospace" >CFS 650 TRUTRO SUR</option>
+              <option class="text-monospace" >METALQUIMIA</option>
+            </select>
+            <button type="submit" class="btn btn-sm btn-info rounded-pill w-100 mt-4">INGRESAR</button>
+          </div>
+       </div>
+      </div>
+    </div>
+      </form>
+  </div>
+</body>
+</html>
+<script>
+  function savecode(){
+    var maquina_ = document.getElementById('producto').value;
+    var user_ = document.getElementById('OPERARIO').value;
+    sessionStorage.setItem('maquina',maquina_)
+    sessionStorage.setItem('usuario', user_)
+    //console.log(code_)
+  }
+
+  var operario = document.getElementById('OPERARIO')
+  function getUsers() {
+    operario.innerHTML = `<option class="text-monospace" value="000">SELECCIONE USUARIO</option>`;
+    var url = '/paico/getusers'
+    fetch(url,{
+      method: 'POST',
+    })
+    .then(res=>res.json())
+    .then(res=>{
+      console.log(res.data)
+      for (let a = 0; a < res.data.length; a++) {
+        const eleA = res.data[a];
+        operario.innerHTML += `<option class="text-monospace" value="${eleA.NOMBRE}">${eleA.RUT}</option>`;
+      }
+    })
+  }
+  getUsers();
+
+
+  if(sessionStorage.getItem('usuario')){
+    document.getElementById('OPERARIO').value = sessionStorage.getItem('usuario');
+  }
+  if(sessionStorage.getItem('maquina')){
+    document.getElementById('producto').value = sessionStorage.getItem('maquina');
+  }
+
+  function checkForm(e) {
+    
+    var maquina_ = document.getElementById('producto').value;
+    var user_ = document.getElementById('OPERARIO').value;
+    if(maquina_ === "000" || user_ === "000")e.preventDefault();
+  }
+  
+</script>
