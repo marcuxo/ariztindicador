@@ -892,7 +892,8 @@ router.post('/xlsxpamco', async(req, res) => {
     var libro = xlsx.read(eccel.data);
     var hoja = libro.SheetNames[0];
     var lineas = xlsx.utils.sheet_to_json(libro.Sheets[hoja]);
-    // console.log(lineas)
+    console.log(lineas)
+    
     function formHora(codestr) {
       var fecha = ((codestr - (25567 + 1)) * 86400 * 1000);
       var fecha1 = new Date(fecha);
