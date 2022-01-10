@@ -5,6 +5,7 @@
         <h5>Carga de Datos</h5>
       </div>
       <form enctype="multipart/form-data" onsubmit="uploadXfile(event)">
+        <a href="/archivo/PAMCO_FIJADO.xlsx" class="float-right mainmenu" title="Descargar archivo de Ejemplo"><i class="far fa-file-excel fa-3x"></i></a>
         <input type="file" name="file" id="file" onchange="valfile()" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
         <label for="file" id="namefile">Seleccionar Archivo de PAMCO *<i class="fas fa-file-upload" ></i></label><br><br>
         <button class="btn btn-success btn-sm py-2 w-50" id="btnUpload">CARGAR</button>
