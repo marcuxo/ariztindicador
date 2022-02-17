@@ -279,19 +279,19 @@ router.post('/saveiny', async(req, res) => {
   var COLOR_INY = 'alert-success';
    if(downinyected == undefined || upinyected == undefined){
     //--upordown = 'SIN REFERENCIA'
-    // request.post('https://botduty.herokuapp.com/--data--:'+data.MAQUINA+":"+CODIGO+":"+X_INYECTED);
+    request.post('https://botduty.herokuapp.com/--data--:'+data.MAQUINA+":"+CODIGO+":"+X_INYECTED);
     var ALERT_INYEC = `PORCENTAJE DE INYECCION  ${X_INYECTED}%`
     var COLOR_INY = 'alert-warning';
   }
   if(X_INYECTED > upinyected){
     upordown = 'ALTO';
-    //request.post('https://botduty.herokuapp.com/--data--:ALTO:'+X_INYECTED+":"+dbinyected+":"+data.MAQUINA+":"+data.PRODUCTO);
+    request.post('https://botduty.herokuapp.com/--data--:ALTO:'+X_INYECTED+":"+dbinyected+":"+data.MAQUINA+":"+data.PRODUCTO);
     var ALERT_INYEC = `% INYECCION FUERA DEL RANGO (ALTO) ${X_INYECTED}% Y DEBERIA ESTAR ENTRE ${downinyected}% Y ${upinyected}%`
     var COLOR_INY = 'alert-danger';
   }
   if(X_INYECTED < downinyected){
     upordown = 'BAJO'
-    //--request.post('https://botduty.herokuapp.com/--data--:BAJO:'+X_INYECTED+":"+dbinyected+":"+data.MAQUINA+":"+data.PRODUCTO);
+    request.post('https://botduty.herokuapp.com/--data--:BAJO:'+X_INYECTED+":"+dbinyected+":"+data.MAQUINA+":"+data.PRODUCTO);
     var ALERT_INYEC = `% INYECCION FUERA DEL RANGO (BAJO) ${X_INYECTED}% Y DEBERIA ESTAR ENTRE ${downinyected}% Y ${upinyected}%`
     var COLOR_INY = 'alert-danger';
   }
