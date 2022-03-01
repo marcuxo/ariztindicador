@@ -66,12 +66,17 @@ router.post('/menu', async(req, res) => {
 async function getMenu(maquinaria) {
   console.log(maquinaria)
   var _f = new Date();
-  var dia = _f.getDate()-1;//dias a tras para generar busqueda de OFs
+  _f.setDate(_f.getDate()-1)
+  console.log('fecha',_f)
+  var dia = _f.getDate();//dias a tras para generar busqueda de OFs
   var yyyy = _f.getFullYear();
   var mm2 = _f.getMonth()+1;
   var mm = mm2<10?"0"+mm2:mm2;
   var dd = dia<10?"0"+dia:dia;
+  console.log('dia', dd)
   var leDate = `${yyyy}-${mm}-${dd}T00:00:00.000+00:00`
+  var le_fecha = new Date(leDate)
+  console.log(le_fecha)
   //var queryOF = await modOf.find({FECHA_PRODUCT: {$gte:leDate}}).sort({N_OF: -1}).limit(15);
   // var queryOF = await modOf.find({$and: [{FECHA_OF: {$gte:leDate}},{LINEA: maquinaria},{ESTADO:{$not:/A/}}]}).sort({N_OF: -1});
   var arr_of = [];
@@ -79,6 +84,7 @@ async function getMenu(maquinaria) {
     const arrOFS = await obje.map(dat=> dat.N_OF)
     arr_of = arrOFS
   })
+
 
   var arr_data = [];
   for (let frg = 0; frg < arr_of.length; frg++) {
@@ -874,6 +880,7 @@ router.post('/xlsxof', async(req, res) => {
     //return PRO;
   }
 
+  //modulo que transforma las fechas desde excel(numero)a fecha de javascript
   function formatExcelof(fecha_) {
     var resultado = ((fecha_* 86400)-2209161600)*1000;
     var fecha = new Date(resultado)//1600128000000
@@ -1098,9 +1105,12 @@ async function grafPesonal(producto, _of) {
 }
 
 /**
- * 
- * api
- * 
+             _      ____    ___        _   _ 
+            / \    |  _ \  |_ _|      | | | |
+           / _ \   | |_) |  | |       | | | |
+          / ___ \  |  __/   | |       |_| |_|
+         /_/   \_\ |_|     |___|      (_) (_)
+                                
  */
 router.post('/getusers',async(req, res)=>{
   try {
