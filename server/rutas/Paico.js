@@ -85,6 +85,7 @@ async function getMenu(maquinaria) {
     arr_of = arrOFS
   })
 
+  console.log("Cuantas of encontro", queryOF.length)
 
   var arr_data = [];
   for (let frg = 0; frg < arr_of.length; frg++) {
